@@ -4,11 +4,13 @@ A new flutter plugin project.
 
 ## Contribution Rules
  1. create branch always from develop
- 2. naming sub folder branch\n
-    a. feature for creating new feature\n
-    b. bugfix for fixing issue\n
-    c. refactor for refactoring code\n
+ 2. naming sub folder branch
+    ```
+    a. feature for creating new feature
+    b. bugfix for fixing issue
+    c. refactor for refactoring code
     d. hotfix for fixing quikly for deploy the library 
+    ```
     ```
     example: 
         - feature/branchNaming
@@ -16,11 +18,13 @@ A new flutter plugin project.
         - hotfix/branchNaming
         - refactor/branchNaming
     ```
- 3. give the prefix for commit message header and always give sub message for the changes commit\n
-        a. feat for new feature\n
-        b. fix for fixing any issue\n 
-        c. refactor for refactoring code\n 
-        d. deploy for deploy new version
+ 3. give the prefix for commit message header and always give sub message for the changes commit
+    ```
+    a. feat for new feature
+    b. fix for fixing any issue 
+    c. refactor for refactoring code 
+    d. deploy for deploy new version
+    ```
     ```
     example: 
         - feat: integration sendbird
