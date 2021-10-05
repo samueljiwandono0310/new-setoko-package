@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ctcorpdigital.setoko_chat_package_example">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
    <application
         android:label="setoko_chat_package_example"
         android:icon="@mipmap/ic_launcher">
