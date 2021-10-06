@@ -13,7 +13,18 @@ class FunctionUtils {
 
   Future<List<XFile>?> showPicker(ImageSource source) async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickMultiImage();
+    List<XFile>? pickedFile;
+
+    if (source == ImageSource.camera) {
+      await picker.pickImage(source: ImageSource.camera).then((value) {
+        if (value != null) {
+          pickedFile = [value];
+        }
+      });
+    } else {
+      pickedFile = await picker.pickMultiImage();
+    }
+
     if (pickedFile != null) {
       return pickedFile;
     }
