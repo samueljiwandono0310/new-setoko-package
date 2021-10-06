@@ -215,17 +215,6 @@ mixin _$ChannelListViewModel on _ChannelListViewModel, Store {
   }
 
   @override
-  void gotoChannelCreate(BuildContext context) {
-    final _$actionInfo = _$_ChannelListViewModelActionController.startAction(
-        name: '_ChannelListViewModel.gotoChannelCreate');
-    try {
-      return super.gotoChannelCreate(context);
-    } finally {
-      _$_ChannelListViewModelActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void _setChannels(List<GroupChannel> values) {
     final _$actionInfo = _$_ChannelListViewModelActionController.startAction(
         name: '_ChannelListViewModel._setChannels');

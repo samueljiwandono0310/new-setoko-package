@@ -11,11 +11,11 @@ class FunctionUtils {
     return _instance;
   }
 
-  Future<File?> showPicker(ImageSource source) async {
+  Future<List<XFile>?> showPicker(ImageSource source) async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source);
+    final pickedFile = await picker.pickMultiImage();
     if (pickedFile != null) {
-      return File(pickedFile.path);
+      return pickedFile;
     }
     return null;
   }

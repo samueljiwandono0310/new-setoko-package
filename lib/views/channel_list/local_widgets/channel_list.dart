@@ -20,20 +20,16 @@ class ChannelList extends StatelessWidget {
     return Observer(
       builder: (context) {
         return AnimatedSwitcher(
-          duration: const Duration(milliseconds: 250),
+          duration: const Duration(milliseconds: 200),
           transitionBuilder: (child, animation) {
-            final _tweenAnimation = Tween<Offset>(
-              begin: Offset(0.0, 1.0),
-              end: Offset(0.0, 0.0),
-            ).animate(animation);
-            return SlideTransition(position: _tweenAnimation, child: child);
+            return FadeTransition(opacity: animation, child: child);
           },
           child: _viewModel.state == ChannelViewState.initial
               ? InitialComponent()
               : _viewModel.state == ChannelViewState.loading && _viewModel.channels.isEmpty
                   ? LoadingComponent()
                   : _viewModel.state == ChannelViewState.error
-                      ? ErrorComponent()
+                      ? ErrorComponent(onPressed: () => _viewModel.loadChannelList(reload: true))
                       : _buildView(_viewModel),
         );
       },
@@ -51,6 +47,7 @@ class ChannelList extends StatelessWidget {
             physics: const AlwaysScrollableScrollPhysics(),
             controller: viewModel.scrollController,
             itemCount: viewModel.itemCount,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             separatorBuilder: (context, index) {
               return SeparatorLineWidget(
                 height: 1,

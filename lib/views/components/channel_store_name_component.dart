@@ -3,11 +3,11 @@ import 'package:setoko_chat_package/views/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:sendbird_sdk/core/channel/group/group_channel.dart';
 
-class ChannelStoreNameWidget extends StatelessWidget {
+class ChannelStoreNameComponent extends StatelessWidget {
   final GroupChannel channel;
   final String? currentUserId;
 
-  const ChannelStoreNameWidget(
+  const ChannelStoreNameComponent(
     this.channel,
     this.currentUserId,
   );

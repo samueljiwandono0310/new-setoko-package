@@ -50,9 +50,6 @@ class _ChannelViewState extends State<ChannelView> {
                   onPressSend: (text) {
                     _viewModel.onSendUserMessage(text);
                   },
-                  onEditing: (text) {
-                    _viewModel.onUpdateMessage(text);
-                  },
                   onChanged: (text) {
                     _viewModel.onTyping(text != '');
                   },
