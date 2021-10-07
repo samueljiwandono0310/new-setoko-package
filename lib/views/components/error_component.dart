@@ -1,14 +1,48 @@
+import 'package:flutter/material.dart';
+import 'package:setoko_chat_package/views/atoms/general_error_widget.dart';
 import 'package:setoko_chat_package/views/styles/text_styles.dart';
 import 'package:setoko_chat_package/views/widgets/text_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:setoko_chat_package/views/components/button_component.dart';
 
 class ErrorComponent extends StatelessWidget {
-  const ErrorComponent({Key? key}) : super(key: key);
+  final Function()? onPressed;
+  const ErrorComponent({Key? key, this.onPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: CTTextWidget(text: 'Oops error occured', textStyle: ChatTextStyles.textStyle25),
+    final size = MediaQuery.of(context).size;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Column(
+              children: [
+                GeneralErrorWidget(
+                  size: 200,
+                ),
+                CTTextWidget(
+                  text: "Oops something went wrong, make sure you have a good internet connection",
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  textStyle: ChatTextStyles.textStyle21,
+                ),
+              ],
+            ),
+            SizedBox(
+              width: size.width,
+              height: 48,
+              child: ButtonComponent(
+                padding: EdgeInsets.zero,
+                caption: 'Try again',
+                onPressed: onPressed,
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

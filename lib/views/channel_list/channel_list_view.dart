@@ -1,4 +1,3 @@
-import 'package:setoko_chat_package/core/utils/assets_path.dart';
 import 'package:setoko_chat_package/core/viewmodels/chat/channel_list/channel_list_viewmodel.dart';
 import 'package:setoko_chat_package/views/atoms/back_button_widget.dart';
 import 'package:setoko_chat_package/views/atoms/separator_line_widget.dart';
@@ -9,7 +8,6 @@ import 'package:setoko_chat_package/views/components/search_component.dart';
 import 'package:setoko_chat_package/views/styles/colors.dart';
 import 'package:setoko_chat_package/views/styles/text_styles.dart';
 import 'package:setoko_chat_package/views/widgets/keyboard_dismissed_wodget.dart';
-import 'package:setoko_chat_package/views/widgets/svg_widget.dart';
 import 'package:setoko_chat_package/views/widgets/text_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -97,11 +95,6 @@ class _ChannelListViewState extends State<ChannelListView> {
                 ChannelList(),
                 ChannelList(),
               ],
-            ),
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: ChatColors.orangePrimary,
-              child: SvgWidget(iconData: AssetPath.svgsPath + 'chat.svg'),
-              onPressed: () => _viewModel.gotoChannelCreate(context),
             ),
           ),
         ),

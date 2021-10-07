@@ -45,9 +45,6 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
   bool hasNext = false;
 
   @observable
-  bool isEditing = false;
-
-  @observable
   bool isShowMediaOption = false;
 
   @observable
@@ -60,13 +57,14 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
   ObservableFuture<GroupChannel>? _getChannelFuture;
 
   @computed
-  ChannelViewState get state => messages.isEmpty && _getMessageFuture.status != FutureStatus.pending
-      ? ChannelViewState.initial
-      : _getMessageFuture.status == FutureStatus.pending
-          ? ChannelViewState.loading
-          : _getMessageFuture.status == FutureStatus.fulfilled
-              ? ChannelViewState.loaded
-              : ChannelViewState.error;
+  ChannelViewState get state =>
+      messages.isEmpty && _getMessageFuture.status != FutureStatus.pending && _getMessageFuture.status != FutureStatus.rejected
+          ? ChannelViewState.initial
+          : _getMessageFuture.status == FutureStatus.pending
+              ? ChannelViewState.loading
+              : _getMessageFuture.status == FutureStatus.fulfilled
+                  ? ChannelViewState.loaded
+                  : ChannelViewState.error;
 
   @computed
   ChannelViewState get loadChannelState => _channel == null
@@ -85,9 +83,6 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
 
   @computed
   bool get displayOnline => channel.members.length == 2;
-
-  @observable
-  bool isDisposed = false;
 
   @computed
   UserEngagementState get engagementState => _userEngagementState;
@@ -116,13 +111,12 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
     this.channelUrl = channelUrl;
     _sbHandlerService.addChannelEventHandler(CHANNEL_HANDLER_KEY, this);
     lstController.addListener(_scrollListener);
-    _loadChannel().then((value) => _loadMessages());
+    _loadChannel().then((value) => loadMessages());
   }
 
   void dispose() {
     _sbHandlerService.removeChannelEventHandler(CHANNEL_HANDLER_KEY);
     channel.endTyping();
-    isDisposed = false;
   }
 
   @action
@@ -134,7 +128,7 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
   }
 
   @action
-  Future<void> _loadMessages({
+  Future<void> loadMessages({
     int? timestamp,
     bool reload = false,
   }) async {
@@ -154,16 +148,11 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
       _getMessageFuture = ObservableFuture<List<BaseMessage>>(channel.getMessagesByTimestamp(_timeStamp, params));
       final res = await _getMessageFuture;
 
-      messages = reload ? res : res + messages;
-      hasNext = messages.length == 20;
+      messages = reload ? res : messages + res;
+      hasNext = res.length == 20;
     } catch (e) {
       print('group_channel_view.dart: getMessages: ERROR: $e');
     }
-  }
-
-  @action
-  void setEditing(bool value) {
-    isEditing = value;
   }
 
   @action
@@ -215,32 +204,6 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
   }
 
   @action
-  Future onDeleteMessage(int messageId) async {
-    try {
-      await channel.deleteMessage(messageId);
-    } catch (e) {}
-  }
-
-  @action
-  Future onUpdateMessage(String? updateText) async {
-    isEditing = false;
-
-    if (updateText == null) {
-      selectedMessage = null;
-      return;
-    }
-
-    if (selectedMessage == null) return;
-
-    try {
-      await channel.updateUserMessage(selectedMessage!.messageId, UserMessageParams(message: updateText));
-      selectedMessage = null;
-    } catch (e) {
-      selectedMessage = null;
-    }
-  }
-
-  @action
   void onTyping(bool hasText) {
     if (!hasText) {
       channel.endTyping();
@@ -250,19 +213,6 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
       _typingTimer = Timer(Duration(milliseconds: 3000), () {
         channel.endTyping();
       });
-    }
-  }
-
-  @action
-  Future<GroupChannel> createChannel(String userId) {
-    try {
-      final newChannel = _sbHandlerService.createChannel(
-        userIds: [userId],
-        operatorUserIds: [currentUser.userId],
-      );
-      return newChannel;
-    } catch (e) {
-      rethrow;
     }
   }
 
@@ -288,7 +238,7 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
     if (lstController.offset >= lstController.position.maxScrollExtent && !lstController.position.outOfRange && state != ChannelViewState.loading) {
       final offset = lstController.offset;
 
-      _loadMessages(
+      loadMessages(
         timestamp: messages.last.createdAt,
       );
 
@@ -338,13 +288,6 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
 
   @action
   @override
-  void onMessageDeleted(BaseChannel channel, int messageId) {
-    messages.removeWhere((e) => e.messageId == messageId);
-    messages = [...messages];
-  }
-
-  @action
-  @override
   void onReadReceiptUpdated(GroupChannel channel) {
     messages = [...messages];
   }
@@ -386,27 +329,6 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
       ));
     }
 
-    if (message.isMyMessage(currentUser: currentUser) && message is UserMessage) {
-      items.addAll([
-        PopupMenuDivider(height: 1),
-        _buildPopupItem(
-          'Edit',
-          AssetPath.svgsPath + 'chat.svg',
-          PopupMenuType.edit,
-        )
-      ]);
-    }
-
-    if (message.isMyMessage(currentUser: currentUser))
-      items.addAll([
-        if (items.length != 0) PopupMenuDivider(height: 1),
-        _buildPopupItem(
-          'Delete',
-          AssetPath.svgsPath + 'chat_delete_suggestion.svg',
-          PopupMenuType.delete,
-        ),
-      ]);
-
     if (items.isEmpty) return;
 
     selectedMessage = message;
@@ -423,70 +345,15 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
     );
 
     switch (selected) {
-      case PopupMenuType.edit:
-        setEditing(true);
-        break;
       case PopupMenuType.copy:
         onCopyText(message.message);
         selectedMessage = null;
         break;
-      case PopupMenuType.delete:
-        await _showDeleteConfirmation(context);
-        selectedMessage = null;
-        break;
+
       default:
         selectedMessage = null;
         break;
     }
-  }
-
-  @action
-  Future _showDeleteConfirmation(BuildContext context) async {
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      child: CTTextWidget(
-        text: "Cancel",
-        textStyle: ChatTextStyles.textStyle3,
-      ),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-    Widget continueButton = TextButton(
-      child: CTTextWidget(
-        text: "Delete",
-        textStyle: ChatTextStyles.textStyle25,
-      ),
-      onPressed: () {
-        onDeleteMessage(selectedMessage!.messageId);
-        Navigator.pop(context);
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: CTTextWidget(
-        text: "Delete message?",
-        textStyle: ChatTextStyles.textStyle3,
-      ),
-      content: CTTextWidget(
-        text: "Would you like to delete this message permanently?",
-        maxLines: 2,
-        textStyle: ChatTextStyles.textStyle25,
-      ),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-
-    // show the dialog
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
   }
 
   @action
@@ -516,8 +383,12 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
   }
 
   void showPicker(ImageSource source) async {
-    final file = await _funtionUtils.showPicker(source);
-    if (file != null) onSendFileMessage(file);
+    final files = await _funtionUtils.showPicker(source);
+    if (files != null) {
+      for (var file in files) {
+        onSendFileMessage(File(file.path));
+      }
+    }
     showMediaMessage(false);
   }
 }

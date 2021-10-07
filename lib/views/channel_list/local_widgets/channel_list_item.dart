@@ -2,7 +2,7 @@ import 'package:setoko_chat_package/core/viewmodels/chat/channel_list/channel_li
 import 'package:setoko_chat_package/views/atoms/circle_count_widget.dart';
 import 'package:setoko_chat_package/views/atoms/message_status_widget.dart';
 import 'package:setoko_chat_package/views/atoms/store_profile_widget.dart';
-import 'package:setoko_chat_package/views/components/channel_store_name_wodget.dart';
+import 'package:setoko_chat_package/views/components/channel_store_name_component.dart';
 import 'package:setoko_chat_package/views/styles/colors.dart';
 import 'package:setoko_chat_package/views/styles/text_styles.dart';
 import 'package:setoko_chat_package/views/widgets/text_widget.dart';
@@ -54,7 +54,7 @@ class ChannelListItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ChannelStoreNameWidget(channel, viewModel.currentUser?.userId),
+            ChannelStoreNameComponent(channel, viewModel.currentUser?.userId),
             const SizedBox(height: 8),
             Row(
               mainAxisSize: MainAxisSize.min,
