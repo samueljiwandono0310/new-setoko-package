@@ -1,4 +1,5 @@
 import 'package:image_picker/image_picker.dart';
+import 'package:setoko_chat_package/core/constants/enums.dart';
 import 'package:setoko_chat_package/core/viewmodels/chat/channel/channel_viewmodel.dart';
 import 'package:setoko_chat_package/views/atoms/add_attachment_button_widget.dart';
 import 'package:setoko_chat_package/views/atoms/add_emoji_button_widget.dart';
@@ -6,20 +7,17 @@ import 'package:setoko_chat_package/views/atoms/message_media_widget.dart';
 import 'package:setoko_chat_package/views/atoms/send_message_button_widget.dart';
 import 'package:setoko_chat_package/views/styles/colors.dart';
 import 'package:setoko_chat_package/views/styles/text_styles.dart';
-import 'package:setoko_chat_package/views/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 
 class MessageInput extends StatefulWidget {
   final Function(String) onPressSend;
-  final Function(String?)? onEditing;
   final Function(String) onChanged;
 
   MessageInput({
     required this.onPressSend,
     required this.onChanged,
-    this.onEditing,
     Key? key,
   }) : super(key: key);
 
@@ -28,7 +26,6 @@ class MessageInput extends StatefulWidget {
 }
 
 class _MessageInputState extends State<MessageInput> {
-  bool isEditing = false;
   bool isShowMediaOption = false;
   final _formKey = GlobalKey<FormState>();
   final inputController = TextEditingController();
@@ -45,10 +42,13 @@ class _MessageInputState extends State<MessageInput> {
 
     return Observer(
       builder: (context) {
-        isEditing = _viewModel.isEditing;
         isShowMediaOption = _viewModel.isShowMediaOption;
 
-        if (_viewModel.selectedMessage != null && isEditing) inputController.text = _viewModel.selectedMessage!.message;
+        if (_viewModel.selectedMessage != null) inputController.text = _viewModel.selectedMessage!.message;
+
+        if (_viewModel.state == ChannelViewState.error && _viewModel.messages.isEmpty) {
+          return const SizedBox.shrink();
+        }
 
         return Container(
           padding: const EdgeInsets.only(bottom: 10, top: 10),
@@ -68,11 +68,7 @@ class _MessageInputState extends State<MessageInput> {
                       child: child,
                     );
                   },
-                  child: isEditing
-                      ? _buildEditorTextMessageView(_viewModel, context)
-                      : isShowMediaOption
-                          ? _buildMediaMessageView(_viewModel, context)
-                          : const SizedBox.shrink(),
+                  child: isShowMediaOption ? _buildMediaMessageView(_viewModel, context) : const SizedBox.shrink(),
                 ),
               ],
             ),
@@ -130,39 +126,36 @@ class _MessageInputState extends State<MessageInput> {
                 filled: true,
                 isDense: true,
                 fillColor: ChatColors.grayLighter,
-                contentPadding: EdgeInsets.all(11),
+                contentPadding: const EdgeInsets.all(11),
                 prefixIcon: AddEmojiButtonWidget(
                   onPressed: () {},
                 ),
-                suffixIcon: IgnorePointer(
-                  ignoring: isEditing,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      AddAttachmentButtonWidget(onPressed: () { 
-                        viewModel.showMediaMessage(!isShowMediaOption);
-                      }),
-                      Container(
-                        width: 47,
-                        decoration: BoxDecoration(
-                          color: ChatColors.orangePrimary,
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(16),
-                            bottomRight: Radius.circular(16),
-                          ),
-                        ),
-                        child: SendMessageButtonWidget(
-                          onPressed: () {
-                            _validateForm(() {
-                              widget.onPressSend(inputController.text);
-                              inputController.clear();
-                            });
-                          },
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    AddAttachmentButtonWidget(onPressed: () {
+                      viewModel.showMediaMessage(!isShowMediaOption);
+                    }),
+                    Container(
+                      width: 47,
+                      decoration: BoxDecoration(
+                        color: ChatColors.orangePrimary,
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(16),
+                          bottomRight: Radius.circular(16),
                         ),
                       ),
-                    ],
-                  ),
+                      child: SendMessageButtonWidget(
+                        onPressed: () {
+                          _validateForm(() {
+                            widget.onPressSend(inputController.text);
+                            inputController.clear();
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
               onChanged: (text) {
@@ -173,40 +166,6 @@ class _MessageInputState extends State<MessageInput> {
         ),
         const SizedBox(width: 20),
       ],
-    );
-  }
-
-  Widget _buildEditorTextMessageView(ChannelViewModel viewModel, BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          TextButton(
-            onPressed: () {
-              if (widget.onEditing != null) widget.onEditing!(null);
-              inputController.clear();
-              viewModel.setEditing(false);
-            },
-            child: CTTextWidget(
-              text: 'Cancel',
-              textStyle: ChatTextStyles.textStyle4,
-            ),
-          ),
-          ElevatedButton(
-            style: ButtonStyle(backgroundColor: MaterialStateProperty.all(ChatColors.greenPrimary)),
-            onPressed: () {
-              if (widget.onEditing != null) widget.onEditing!(inputController.text);
-              inputController.clear();
-              viewModel.setEditing(false);
-            },
-            child: CTTextWidget(
-              text: 'Save',
-              textStyle: ChatTextStyles.textStyle4.copyWith(color: ChatColors.white),
-            ),
-          ),
-        ],
-      ),
     );
   }
 

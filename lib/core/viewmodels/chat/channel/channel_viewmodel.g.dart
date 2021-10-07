@@ -126,21 +126,6 @@ mixin _$ChannelViewModel on _ChannelViewModel, Store {
     });
   }
 
-  final _$isEditingAtom = Atom(name: '_ChannelViewModel.isEditing');
-
-  @override
-  bool get isEditing {
-    _$isEditingAtom.reportRead();
-    return super.isEditing;
-  }
-
-  @override
-  set isEditing(bool value) {
-    _$isEditingAtom.reportWrite(value, super.isEditing, () {
-      super.isEditing = value;
-    });
-  }
-
   final _$isShowMediaOptionAtom =
       Atom(name: '_ChannelViewModel.isShowMediaOption');
 
@@ -206,21 +191,6 @@ mixin _$ChannelViewModel on _ChannelViewModel, Store {
     });
   }
 
-  final _$isDisposedAtom = Atom(name: '_ChannelViewModel.isDisposed');
-
-  @override
-  bool get isDisposed {
-    _$isDisposedAtom.reportRead();
-    return super.isDisposed;
-  }
-
-  @override
-  set isDisposed(bool value) {
-    _$isDisposedAtom.reportWrite(value, super.isDisposed, () {
-      super.isDisposed = value;
-    });
-  }
-
   final _$_loadChannelAsyncAction =
       AsyncAction('_ChannelViewModel._loadChannel');
 
@@ -233,9 +203,9 @@ mixin _$ChannelViewModel on _ChannelViewModel, Store {
       AsyncAction('_ChannelViewModel._loadMessages');
 
   @override
-  Future<void> _loadMessages({int? timestamp, bool reload = false}) {
+  Future<void> loadMessages({int? timestamp, bool reload = false}) {
     return _$_loadMessagesAsyncAction
-        .run(() => super._loadMessages(timestamp: timestamp, reload: reload));
+        .run(() => super.loadMessages(timestamp: timestamp, reload: reload));
   }
 
   final _$onSendUserMessageAsyncAction =
@@ -256,24 +226,6 @@ mixin _$ChannelViewModel on _ChannelViewModel, Store {
         .run(() => super.onSendFileMessage(file));
   }
 
-  final _$onDeleteMessageAsyncAction =
-      AsyncAction('_ChannelViewModel.onDeleteMessage');
-
-  @override
-  Future<dynamic> onDeleteMessage(int messageId) {
-    return _$onDeleteMessageAsyncAction
-        .run(() => super.onDeleteMessage(messageId));
-  }
-
-  final _$onUpdateMessageAsyncAction =
-      AsyncAction('_ChannelViewModel.onUpdateMessage');
-
-  @override
-  Future<dynamic> onUpdateMessage(String? updateText) {
-    return _$onUpdateMessageAsyncAction
-        .run(() => super.onUpdateMessage(updateText));
-  }
-
   final _$showMessageMenuAsyncAction =
       AsyncAction('_ChannelViewModel.showMessageMenu');
 
@@ -286,28 +238,8 @@ mixin _$ChannelViewModel on _ChannelViewModel, Store {
         super.showMessageMenu(context: context, message: message, pos: pos));
   }
 
-  final _$_showDeleteConfirmationAsyncAction =
-      AsyncAction('_ChannelViewModel._showDeleteConfirmation');
-
-  @override
-  Future<dynamic> _showDeleteConfirmation(BuildContext context) {
-    return _$_showDeleteConfirmationAsyncAction
-        .run(() => super._showDeleteConfirmation(context));
-  }
-
   final _$_ChannelViewModelActionController =
       ActionController(name: '_ChannelViewModel');
-
-  @override
-  void setEditing(bool value) {
-    final _$actionInfo = _$_ChannelViewModelActionController.startAction(
-        name: '_ChannelViewModel.setEditing');
-    try {
-      return super.setEditing(value);
-    } finally {
-      _$_ChannelViewModelActionController.endAction(_$actionInfo);
-    }
-  }
 
   @override
   void showMediaMessage(bool value) {
@@ -326,17 +258,6 @@ mixin _$ChannelViewModel on _ChannelViewModel, Store {
         name: '_ChannelViewModel.onTyping');
     try {
       return super.onTyping(hasText);
-    } finally {
-      _$_ChannelViewModelActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  Future<GroupChannel> createChannel(String userId) {
-    final _$actionInfo = _$_ChannelViewModelActionController.startAction(
-        name: '_ChannelViewModel.createChannel');
-    try {
-      return super.createChannel(userId);
     } finally {
       _$_ChannelViewModelActionController.endAction(_$actionInfo);
     }
@@ -370,17 +291,6 @@ mixin _$ChannelViewModel on _ChannelViewModel, Store {
         name: '_ChannelViewModel.onMessageUpdated');
     try {
       return super.onMessageUpdated(channel, message);
-    } finally {
-      _$_ChannelViewModelActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void onMessageDeleted(BaseChannel channel, int messageId) {
-    final _$actionInfo = _$_ChannelViewModelActionController.startAction(
-        name: '_ChannelViewModel.onMessageDeleted');
-    try {
-      return super.onMessageDeleted(channel, messageId);
     } finally {
       _$_ChannelViewModelActionController.endAction(_$actionInfo);
     }
@@ -437,9 +347,7 @@ mixin _$ChannelViewModel on _ChannelViewModel, Store {
 messages: ${messages},
 selectedMessage: ${selectedMessage},
 hasNext: ${hasNext},
-isEditing: ${isEditing},
 isShowMediaOption: ${isShowMediaOption},
-isDisposed: ${isDisposed},
 state: ${state},
 loadChannelState: ${loadChannelState},
 channel: ${channel},

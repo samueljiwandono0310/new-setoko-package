@@ -4,10 +4,11 @@ class CTTextWidget extends StatelessWidget {
   final String text;
   final int maxLines;
   final TextStyle textStyle;
+  final TextAlign? textAlign;
   const CTTextWidget({
     Key? key,
     required this.text,
-    required this.textStyle, this.maxLines = 1,
+    required this.textStyle, this.maxLines = 1, this.textAlign
   }) : super(key: key);
 
   @override
@@ -16,6 +17,7 @@ class CTTextWidget extends StatelessWidget {
       text,
       style: textStyle,
       maxLines: maxLines,
+      textAlign: textAlign,
       overflow: TextOverflow.ellipsis,
     );
   }

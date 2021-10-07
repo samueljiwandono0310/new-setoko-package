@@ -4,7 +4,7 @@ import 'package:setoko_chat_package/views/atoms/back_button_widget.dart';
 import 'package:setoko_chat_package/views/atoms/more_options_wodget.dart';
 import 'package:setoko_chat_package/views/atoms/store_profile_widget.dart';
 import 'package:setoko_chat_package/views/components/app_bar_component.dart';
-import 'package:setoko_chat_package/views/components/channel_store_name_wodget.dart';
+import 'package:setoko_chat_package/views/components/channel_store_name_component.dart';
 import 'package:setoko_chat_package/views/styles/text_styles.dart';
 import 'package:setoko_chat_package/views/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +53,7 @@ class ChannelHeader extends StatelessWidget {
       builder: (context) {
         final size = MediaQuery.of(context).size;
         List<Widget> headers = [
-          SizedBox(width: size.width * 0.6, child: ChannelStoreNameWidget(viewModel.channel, viewModel.currentUser.userId)),
+          SizedBox(width: size.width * 0.6, child: ChannelStoreNameComponent(viewModel.channel, viewModel.currentUser.userId)),
         ];
 
         switch (ue) {

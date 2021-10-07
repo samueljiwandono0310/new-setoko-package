@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:setoko_chat_package/views/channel/channel_view.dart';
-import 'package:setoko_chat_package/views/channel_create/channel_create_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mobx/mobx.dart';
 import 'package:flutter/material.dart';
@@ -45,13 +44,14 @@ abstract class _ChannelListViewModel with Store, ChannelEventHandler {
   ScrollController get scrollController => channelListTabState == ChannelListTabState.all ? _allListController : _unreadListController;
 
   @computed
-  ChannelViewState get state => channels.isEmpty && _loadChannelListFuture.status != FutureStatus.pending
-      ? ChannelViewState.initial
-      : _loadChannelListFuture.status == FutureStatus.pending
-          ? ChannelViewState.loading
-          : _loadChannelListFuture.status == FutureStatus.fulfilled
-              ? ChannelViewState.loaded
-              : ChannelViewState.error;
+  ChannelViewState get state =>
+      channels.isEmpty && _loadChannelListFuture.status != FutureStatus.pending && _loadChannelListFuture.status != FutureStatus.rejected
+          ? ChannelViewState.initial
+          : _loadChannelListFuture.status == FutureStatus.pending
+              ? ChannelViewState.loading
+              : _loadChannelListFuture.status == FutureStatus.fulfilled
+                  ? ChannelViewState.loaded
+                  : ChannelViewState.error;
 
   @computed
   int get itemCount => query.hasNext ? channels.length + 1 : channels.length;
@@ -161,16 +161,6 @@ abstract class _ChannelListViewModel with Store, ChannelEventHandler {
         builder: (context) => ChannelView(channelUrl: channel.channelUrl),
       ),
     ).whenComplete(() => channels = [...channels]);
-  }
-
-  @action
-  void gotoChannelCreate(BuildContext context) {
-    Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => ChannelCreateView(),
-      ),
-    );
   }
 
   @action
