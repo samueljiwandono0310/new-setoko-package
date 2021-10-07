@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:sendbird_sdk/sendbird_sdk.dart';
 import 'package:setoko_chat_package/core/services/sendbird/sb.dart';
 import 'package:setoko_chat_package/core/interfaces/chat_interface.dart';
@@ -53,14 +55,13 @@ class SendBirdService implements ChatInterface {
 
   @override
   Future<PushTokenRegistrationStatus> registerPushToken({
-    required PushTokenType type,
     required String token,
     bool alwaysPush = false,
     bool unique = false,
   }) async {
     final _result = await SB.callback<Future<PushTokenRegistrationStatus>>(
       () => _sendbird.registerPushToken(
-        type: type,
+        type: Platform.isIOS ? PushTokenType.apns : PushTokenType.fcm,
         token: token,
       ),
     );
@@ -69,10 +70,10 @@ class SendBirdService implements ChatInterface {
   }
 
   @override
-  Future<void> unregisterPushToken({required PushTokenType type, required String token}) async {
+  Future<void> unregisterPushToken({required String token}) async {
     await SB.callback<Future<void>>(
       () => _sendbird.unregisterPushToken(
-        type: type,
+        type: Platform.isIOS ? PushTokenType.apns : PushTokenType.fcm,
         token: token,
       ),
     );
