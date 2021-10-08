@@ -45,16 +45,15 @@ class ChatModule {
   bool isInitialized() => _chatInterface.isInitialized();
 
   Future<PushTokenRegistrationStatus> registerPushToken({
-    required PushTokenType type,
     required String token,
     bool alwaysPush = false,
     bool unique = false,
   }) async {
-    return _chatInterface.registerPushToken(type: type, token: token);
+    return _chatInterface.registerPushToken(token: token);
   }
 
-  Future<void> unregisterPushToken({required PushTokenType type, required String token}) async {
-    return _chatInterface.unregisterPushToken(type: type, token: token);
+  Future<void> unregisterPushToken({required String token}) async {
+    return _chatInterface.unregisterPushToken(token: token);
   }
 
   User? get currentUser => _chatInterface.currentUser;

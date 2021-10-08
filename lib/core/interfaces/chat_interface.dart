@@ -17,14 +17,12 @@ abstract class ChatInterface {
   bool isInitialized();
 
   Future<PushTokenRegistrationStatus> registerPushToken({
-    required PushTokenType type,
     required String token,
     bool alwaysPush = false,
     bool unique = false,
   });
 
   Future<void> unregisterPushToken({
-    required PushTokenType type,
     required String token,
   });
 
