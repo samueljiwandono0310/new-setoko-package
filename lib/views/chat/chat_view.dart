@@ -21,7 +21,7 @@ class ChatView extends StatefulWidget {
     this.onPressed,
     this.chatArgument,
     this.chatUserArgument,
-    this.directToDetail = true,
+    this.directToDetail = false,
   }) : super(key: key);
 
   @override
@@ -33,7 +33,7 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   void initState() {
-    if (widget.directToDetail) {
+    if (!widget.directToDetail) {
       Future.delayed(Duration.zero, () {
         viewModel.initState(
           chatArgument: widget.chatArgument!,
@@ -46,7 +46,7 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   void dispose() {
-    if (widget.directToDetail) {
+    if (!widget.directToDetail) {
       viewModel.dispose();
     }
     super.dispose();
