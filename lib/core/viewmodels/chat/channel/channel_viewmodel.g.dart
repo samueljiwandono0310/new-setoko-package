@@ -199,12 +199,12 @@ mixin _$ChannelViewModel on _ChannelViewModel, Store {
     return _$_loadChannelAsyncAction.run(() => super._loadChannel());
   }
 
-  final _$_loadMessagesAsyncAction =
-      AsyncAction('_ChannelViewModel._loadMessages');
+  final _$loadMessagesAsyncAction =
+      AsyncAction('_ChannelViewModel.loadMessages');
 
   @override
   Future<void> loadMessages({int? timestamp, bool reload = false}) {
-    return _$_loadMessagesAsyncAction
+    return _$loadMessagesAsyncAction
         .run(() => super.loadMessages(timestamp: timestamp, reload: reload));
   }
 
