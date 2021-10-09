@@ -12,16 +12,16 @@ class ChatView extends StatefulWidget {
   final Color? color;
   final bool directToDetail;
   final Function()? onPressed;
-  final ChatArgument chatArgument;
-  final ChatUserArgument chatUserArgument;
+  final ChatArgument? chatArgument;
+  final ChatUserArgument? chatUserArgument;
   const ChatView({
     Key? key,
     this.size,
     this.color,
     this.onPressed,
+    this.chatArgument,
+    this.chatUserArgument,
     this.directToDetail = true,
-    required this.chatArgument,
-    required this.chatUserArgument,
   }) : super(key: key);
 
   @override
@@ -36,8 +36,8 @@ class _ChatViewState extends State<ChatView> {
     if (widget.directToDetail) {
       Future.delayed(Duration.zero, () {
         viewModel.initState(
-          chatArgument: widget.chatArgument,
-          chatUserArgument: widget.chatUserArgument,
+          chatArgument: widget.chatArgument!,
+          chatUserArgument: widget.chatUserArgument!,
         );
       });
     }
