@@ -31,11 +31,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with SessionEventHandler {
-
-  final _chatModule = ChatModule();
+  bool _isLoggedIn = false;
   final ValueNotifier<bool> _isLoading = ValueNotifier(false);
-  final TextEditingController userNameController = TextEditingController();
-  final TextEditingController nickNameController = TextEditingController();
+  final TextEditingController userNameController = TextEditingController(text: 'hen1');
+  final TextEditingController nickNameController = TextEditingController(text: 'Hendi');
 
   final _formKey = GlobalKey<FormState>();
 
@@ -47,31 +46,9 @@ class _MyHomePageState extends State<MyHomePage> with SessionEventHandler {
 
   void connectSB() async {
     _isLoading.value = true;
-    await _chatModule
-        .connect(
-      userNameController.text,
-      nickname: nickNameController.text,
-    )
-        .then(
-      (value) {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return const AlertDialog(
-              title: Text('Successfully Login'),
-              content: Text('Please click notification icon to go Chat List'),
-            );
-          },
-        );
-      },
-    );
+    await Future.delayed(const Duration(seconds: 1));
+    _isLoggedIn = true;
     _isLoading.value = false;
-  }
-
-  @override
-  void dispose() {
-    _chatModule.disconnect();
-    super.dispose();
   }
 
   @override
@@ -93,11 +70,17 @@ class _MyHomePageState extends State<MyHomePage> with SessionEventHandler {
             ValueListenableBuilder<bool>(
               valueListenable: _isLoading,
               builder: (context, value, child) {
-                if (_chatModule.currentUser != null) {
-                  return ChatView(userId: userNameController.text);
-                } else {
-                  return const SizedBox.shrink();
-                }
+                return ChatView(
+                  key: ValueKey<bool>(_isLoggedIn),
+                  chatArgument: ChatArgument()
+                    ..isLogin = _isLoggedIn
+                    ..loginPathState = _isLoggedIn
+                    ..registerPathState = _isLoggedIn,
+                  chatUserArgument: ChatUserArgument(
+                    userId: userNameController.text,
+                    nickname: nickNameController.text,
+                  ),
+                );
               },
             )
           ],

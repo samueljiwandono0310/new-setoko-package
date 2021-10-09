@@ -37,11 +37,13 @@ abstract class _ChatViewModel with Store {
   int get totalUnreadCount => _totalUnreadCount;
 
   Future<void> connectToSendBird() async {
-    await _chatModule.connect(
-      _chatUserArgument.userId,
-      nickname: _chatUserArgument.nickname,
-      accessToken: _chatUserArgument.accessToken,
-    );
+    try {
+      await _chatModule.connect(
+        _chatUserArgument.userId,
+        nickname: _chatUserArgument.nickname,
+        accessToken: _chatUserArgument.accessToken,
+      );
+    } catch (_) {}
   }
 
   void _setupDelayedInitialization() {
@@ -99,12 +101,16 @@ abstract class _ChatViewModel with Store {
           builder: (context) => ChatErrorView(
             viewToShow: ChannelListView(),
             tryAgainAction: () async {
-              if (isLogin) {
-                await connectToSendBird();
-                _getAndListenToMessage();
-              } else {
-                await Future.delayed(const Duration(milliseconds: 500));
-                throw Exception('User is guest');
+              try {
+                if (isLogin) {
+                  await connectToSendBird();
+                  _getAndListenToMessage();
+                } else {
+                  await Future.delayed(const Duration(milliseconds: 500));
+                  throw Exception('User is guest');
+                }
+              } catch (e) {
+                throw Exception(e);
               }
             },
           ),
