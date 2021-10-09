@@ -18,7 +18,6 @@ abstract class _ChatViewModel with Store {
   static final _sbUserService = SendBirdUserService();
 
   StreamSubscription<int>? _messageListener;
-  Timer? _periodic;
   late ChatUserArgument _chatUserArgument;
 
   @observable
@@ -55,7 +54,6 @@ abstract class _ChatViewModel with Store {
 
   void dispose() {
     _messageListener?.cancel();
-    _periodic?.cancel();
     _chatModule.disconnect();
   }
 
