@@ -32,7 +32,6 @@ class SendBirdService implements ChatInterface {
         apiHost: apiHost,
         wsHost: wsHost,
       ),
-      (error) => disconnect(),
     );
 
     return _result;

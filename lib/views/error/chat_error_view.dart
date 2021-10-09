@@ -7,12 +7,10 @@ import 'package:setoko_chat_package/views/components/loading_component.dart';
 import 'package:setoko_chat_package/views/styles/colors.dart';
 
 class ChatErrorView extends StatelessWidget {
-  final Widget viewToShow;
   final Function() tryAgainAction;
   ChatErrorView({
     Key? key,
     required this.tryAgainAction,
-    required this.viewToShow,
   }) : super(key: key);
 
   ValueNotifier<bool> _isLoading = ValueNotifier<bool>(false);
@@ -22,10 +20,6 @@ class ChatErrorView extends StatelessWidget {
       _isLoading.value = true;
       await tryAgainAction();
       _isLoading.value = false;
-      Navigator.pushReplacement(
-        context,
-        CupertinoPageRoute(builder: (context) => viewToShow),
-      );
     } catch (e) {
       _isLoading.value = false;
     }

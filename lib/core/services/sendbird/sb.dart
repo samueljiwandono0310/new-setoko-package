@@ -11,15 +11,11 @@ class SB {
     return _instance;
   }
 
-  static T callback<T>(
-    Function callback, [
-    Function(dynamic error)? onError,
-  ]) {
+  static T callback<T>(Function callback) {
     try {
       return callback();
     } catch (error) {
       error.logger();
-      if (onError != null) onError(error);
       throw error;
     }
   }

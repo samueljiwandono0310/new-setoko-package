@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:setoko_chat_package/core/services/sendbird/sendbird_user_service.dart';
 import 'package:setoko_chat_package/views/error/chat_error_view.dart';
+import 'package:setoko_chat_package/core/extensions/logger_extension.dart';
 
 part 'chat_viewmodel.g.dart';
 
@@ -36,13 +37,11 @@ abstract class _ChatViewModel with Store {
   int get totalUnreadCount => _totalUnreadCount;
 
   Future<void> connectToSendBird() async {
-    try {
-      await _chatModule.connect(
-        _chatUserArgument.userId,
-        nickname: _chatUserArgument.nickname,
-        accessToken: _chatUserArgument.accessToken,
-      );
-    } catch (_) {}
+    await _chatModule.connect(
+      _chatUserArgument.userId,
+      nickname: _chatUserArgument.nickname,
+      accessToken: _chatUserArgument.accessToken,
+    );
   }
 
   void _setupDelayedInitialization() {
@@ -67,11 +66,16 @@ abstract class _ChatViewModel with Store {
     this.registerPathState = chatArgument.registerPathState;
     this._chatUserArgument = chatUserArgument;
 
-    if (chatArgument.isLogin) {
-      await connectToSendBird();
-      _getAndListenToMessage();
-    } else {
-      _setupDelayedInitialization();
+    try {
+      if (chatArgument.isLogin) {
+        await connectToSendBird();
+        _getAndListenToMessage();
+      } else {
+        _setupDelayedInitialization();
+      }
+    } catch (e) {
+      _chatModule.disconnect();
+      e.logger();
     }
   }
 
@@ -97,18 +101,22 @@ abstract class _ChatViewModel with Store {
         context,
         CupertinoPageRoute(
           builder: (context) => ChatErrorView(
-            viewToShow: ChannelListView(),
             tryAgainAction: () async {
-              try {
-                if (isLogin) {
+              if (isLogin) {
+                try {
                   await connectToSendBird();
                   _getAndListenToMessage();
-                } else {
-                  await Future.delayed(const Duration(milliseconds: 500));
-                  throw Exception('User is guest');
+                  Navigator.pushReplacement(
+                    context,
+                    CupertinoPageRoute(builder: (context) => ChannelListView()),
+                  );
+                } catch (e) {
+                  _chatModule.disconnect();
+                  e.logger();
                 }
-              } catch (e) {
-                throw Exception(e);
+              } else {
+                await Future.delayed(const Duration(milliseconds: 500));
+                'User is guest'.logger();
               }
             },
           ),
