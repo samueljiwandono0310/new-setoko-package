@@ -49,27 +49,4 @@ class SendBirdHandlerService {
   ChannelEventHandler? getChannelEventHandler(String identifier) {
     return SB.callback<ChannelEventHandler?>(() => _sendbird.getChannelEventHandler(identifier));
   }
-
-  Future<GroupChannel> createChannel({
-    String? name,
-    String? channelUrl,
-    FileInfo? fileInfo,
-    required List<String> userIds,
-    required List<String> operatorUserIds,
-  }) async {
-    final params = GroupChannelParams()
-      ..name = name
-      ..isDistinct = true
-      ..coverImage = fileInfo
-      ..channelUrl = channelUrl
-      ..operatorUserIds = operatorUserIds
-      ..userIds = [...userIds, ...operatorUserIds];
-    final channel = await SB.callback<Future<GroupChannel>>(() => GroupChannel.createChannel(params));
-    return channel;
-  }
-
-  Future<GroupChannel> getChannel(String channelUrl) async {
-    final channel = await SB.callback<Future<GroupChannel>>(() => GroupChannel.getChannel(channelUrl));
-    return channel;
-  }
 }

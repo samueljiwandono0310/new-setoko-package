@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
+import 'package:setoko_chat_package/core/services/sendbird/sendbird_channel_service.dart';
 import 'package:setoko_chat_package/core/utils/assets_path.dart';
 import 'package:setoko_chat_package/core/utils/function_utils.dart';
 import 'package:setoko_chat_package/views/styles/colors.dart';
@@ -25,6 +26,7 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
   static final _funtionUtils = FunctionUtils();
   static final _sbUserService = SendBirdUserService();
   static final _sbHandlerService = SendBirdHandlerService();
+  static final _sbChannelService = SendBirdChannelService();
 
   late String channelUrl;
 
@@ -121,7 +123,7 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
 
   @action
   Future<void> _loadChannel() async {
-    _getChannelFuture = ObservableFuture<GroupChannel>(_sbHandlerService.getChannel(channelUrl));
+    _getChannelFuture = ObservableFuture<GroupChannel>(_sbChannelService.getChannel(channelUrl));
     final res = await _getChannelFuture;
     _channel = res;
     channel.markAsRead();

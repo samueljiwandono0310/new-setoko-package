@@ -8,10 +8,18 @@ import 'package:setoko_chat_package/views/atoms/circle_count_widget.dart';
 import 'package:setoko_chat_package/core/viewmodels/chat/chat_mini/chat_viewmodel.dart';
 
 class ChatView extends StatefulWidget {
+  final double? size;
+  final Color? color;
+  final bool directToDetail;
+  final Function()? onPressed;
   final ChatArgument chatArgument;
   final ChatUserArgument chatUserArgument;
   const ChatView({
     Key? key,
+    this.size,
+    this.color,
+    this.onPressed,
+    this.directToDetail = true,
     required this.chatArgument,
     required this.chatUserArgument,
   }) : super(key: key);
@@ -25,18 +33,22 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   void initState() {
-    Future.delayed(Duration.zero, () {
-      viewModel.initState(
-        chatArgument: widget.chatArgument,
-        chatUserArgument: widget.chatUserArgument,
-      );
-    });
+    if (widget.directToDetail) {
+      Future.delayed(Duration.zero, () {
+        viewModel.initState(
+          chatArgument: widget.chatArgument,
+          chatUserArgument: widget.chatUserArgument,
+        );
+      });
+    }
     super.initState();
   }
 
   @override
   void dispose() {
-    viewModel.dispose();
+    if (widget.directToDetail) {
+      viewModel.dispose();
+    }
     super.dispose();
   }
 
@@ -44,7 +56,7 @@ class _ChatViewState extends State<ChatView> {
   Widget build(BuildContext context) {
     return IconButton(
       padding: EdgeInsets.zero,
-      onPressed: () => viewModel.goToChat(context),
+      onPressed: widget.onPressed ?? () => viewModel.goToChat(context),
       icon: Container(
         width: 42,
         height: 42,
@@ -53,6 +65,9 @@ class _ChatViewState extends State<ChatView> {
           children: [
             Center(
               child: SvgWidget(
+                width: widget.size,
+                height: widget.size,
+                color: widget.color,
                 iconData: AssetPath.svgsPath + 'chat.svg',
               ),
             ),
