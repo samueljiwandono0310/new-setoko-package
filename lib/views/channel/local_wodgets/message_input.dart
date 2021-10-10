@@ -93,36 +93,40 @@ class _MessageInputState extends State<MessageInput> {
 
         return SizedBox(
           height: 125,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-            itemCount: viewModel.products.length,
-            itemBuilder: (context, index) {
-              return Container(
-                width: 307,
-                height: 79,
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                  color: ChatColors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black54,
-                      spreadRadius: 0,
-                      blurRadius: 4,
-                      offset: Offset(0, 2),
+          child: Observer(
+            builder: (context) {
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                itemCount: viewModel.products.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    width: 307,
+                    height: 79,
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: ChatColors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black54,
+                          spreadRadius: 0,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Stack(
-                  children: [
-                    ProductDetailComponent(ctProductDetailData: widget.ctProductDetailData),
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: CancelButtonWidget(onPressed: () => viewModel.deleteProduct(viewModel.products[index])),
+                    child: Stack(
+                      children: [
+                        ProductDetailComponent(ctProductDetailData: widget.ctProductDetailData),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: CancelButtonWidget(onPressed: () => viewModel.deleteProduct(viewModel.products[index])),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  );
+                },
               );
             },
           ),
@@ -202,6 +206,7 @@ class _MessageInputState extends State<MessageInput> {
                       child: SendMessageButtonWidget(
                         onPressed: () {
                           _validateForm(() {
+                            viewModel.sendAttachedProducts();
                             widget.onPressSend(inputController.text);
                             inputController.clear();
                           });

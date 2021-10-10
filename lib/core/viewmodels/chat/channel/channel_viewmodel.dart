@@ -225,6 +225,30 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
   }
 
   @action
+  Future onSendProductMessage(CTProductDetailData product) async {
+    final params = FileMessageParams.withUrl(
+      product.medias![0].url!,
+      mimeType: product.medias![0].kind,
+      name: product.medias![0].filename,
+    );
+    final preMessage = channel.sendFileMessage(params, onCompleted: (msg, error) {
+      final index = messages.indexWhere((element) => element.requestId == msg.requestId);
+      if (index != -1) messages.removeAt(index);
+      messages = [msg, ...messages];
+      messages.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      markAsReadDebounce();
+    });
+
+    messages = [preMessage, ...messages];
+
+    lstController.animateTo(
+      0.0,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
+  @action
   void onTyping(bool hasText) {
     if (!hasText) {
       channel.endTyping();
@@ -411,5 +435,13 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
       }
     }
     showMediaMessage(false);
+  }
+
+  void sendAttachedProducts() {
+    if (products.isNotEmpty) {
+      for (var product in products) {
+        onSendProductMessage(product);
+      }
+    }
   }
 }

@@ -241,6 +241,15 @@ mixin _$ChannelViewModel on _ChannelViewModel, Store {
         .run(() => super.onSendFileMessage(file));
   }
 
+  final _$onSendProductMessageAsyncAction =
+      AsyncAction('_ChannelViewModel.onSendProductMessage');
+
+  @override
+  Future<dynamic> onSendProductMessage(CTProductDetailData product) {
+    return _$onSendProductMessageAsyncAction
+        .run(() => super.onSendProductMessage(product));
+  }
+
   final _$showMessageMenuAsyncAction =
       AsyncAction('_ChannelViewModel.showMessageMenu');
 
