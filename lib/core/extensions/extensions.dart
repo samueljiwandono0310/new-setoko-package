@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sendbird_sdk/core/message/base_message.dart';
 import 'package:sendbird_sdk/core/models/user.dart';
@@ -66,5 +68,35 @@ extension CustomListExtension<T> on List<T> {
   /// Removes all `null`s from the [List].
   void removeNulls() {
     removeWhere((element) => element == null);
+  }
+}
+
+extension NavigatorExtension on Widget {
+  // push
+  Future<T?> go<T extends Object?>(
+    BuildContext context, {
+    bool rootNav = false,
+  }) {
+    return Navigator.of(context, rootNavigator: rootNav).push(
+      CupertinoPageRoute(builder: (context) => this),
+    );
+  }
+
+  // push replacement
+  Future removeCurrentAndGo(
+    BuildContext context, {
+    bool rootNav = false,
+  }) {
+    return Navigator.of(context, rootNavigator: rootNav).pushReplacement(
+      CupertinoPageRoute(builder: (context) => this),
+    );
+  }
+
+  // pop
+  void back<T extends Object?>(
+    BuildContext context, {
+    bool rootNav = false,
+  }) {
+    return Navigator.of(context, rootNavigator: rootNav).pop(context);
   }
 }

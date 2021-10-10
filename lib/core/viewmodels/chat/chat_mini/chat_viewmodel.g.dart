@@ -102,11 +102,11 @@ mixin _$ChatViewModel on _ChatViewModel, Store {
       ActionController(name: '_ChatViewModel');
 
   @override
-  void goToChat(BuildContext context) {
+  void goToChat(BuildContext context, dynamic argument) {
     final _$actionInfo = _$_ChatViewModelActionController.startAction(
         name: '_ChatViewModel.goToChat');
     try {
-      return super.goToChat(context);
+      return super.goToChat(context, argument);
     } finally {
       _$_ChatViewModelActionController.endAction(_$actionInfo);
     }

@@ -1,7 +1,12 @@
 import 'dart:async';
+import 'package:sendbird_sdk/sendbird_sdk.dart';
 import 'package:setoko_chat_package/core/arguments/chat_argument.dart';
 import 'package:setoko_chat_package/core/arguments/chat_user_argument.dart';
+import 'package:setoko_chat_package/core/models/merchant/merchant.dart';
+import 'package:setoko_chat_package/core/models/product/product_detail.dart';
 import 'package:setoko_chat_package/core/modules/chat/chat_module.dart';
+import 'package:setoko_chat_package/core/services/sendbird/sendbird_channel_service.dart';
+import 'package:setoko_chat_package/views/channel/channel_view.dart';
 import 'package:setoko_chat_package/views/channel_list/channel_list_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +14,7 @@ import 'package:mobx/mobx.dart';
 import 'package:setoko_chat_package/core/services/sendbird/sendbird_user_service.dart';
 import 'package:setoko_chat_package/views/error/chat_error_view.dart';
 import 'package:setoko_chat_package/core/extensions/logger_extension.dart';
+import 'package:setoko_chat_package/core/extensions/extensions.dart';
 
 part 'chat_viewmodel.g.dart';
 
@@ -17,6 +23,7 @@ class ChatViewModel = _ChatViewModel with _$ChatViewModel;
 abstract class _ChatViewModel with Store {
   static final _chatModule = ChatModule();
   static final _sbUserService = SendBirdUserService();
+  static final _sbChannelService = SendBirdChannelService();
 
   StreamSubscription<int>? _messageListener;
   late ChatUserArgument _chatUserArgument;
@@ -88,40 +95,89 @@ abstract class _ChatViewModel with Store {
   }
 
   @action
-  void goToChat(BuildContext context) {
+  void goToChat(BuildContext context, dynamic argument) {
     if (_chatModule.currentUser != null) {
-      Navigator.push(
-        context,
-        CupertinoPageRoute(
-          builder: (context) => ChannelListView(),
-        ),
-      );
+      if (argument == null) {
+        ChannelListView().go(context);
+      } else if (argument is Merchant) {
+        createChannelWithMerchanInfo(argument).then((channel) {
+          ChannelView(channelUrl: channel.channelUrl).go(context);
+        });
+      } else {
+        // createChannelWithProductInfo(argument).then((value) {
+        //   // do magic
+        // });
+      }
     } else {
-      Navigator.push(
-        context,
-        CupertinoPageRoute(
-          builder: (context) => ChatErrorView(
-            tryAgainAction: () async {
-              if (isLogin) {
-                try {
-                  await connectToSendBird();
-                  _getAndListenToMessage();
-                  Navigator.pushReplacement(
-                    context,
-                    CupertinoPageRoute(builder: (context) => ChannelListView()),
-                  );
-                } catch (e) {
-                  _chatModule.disconnect();
-                  e.logger();
-                }
+      ChatErrorView(
+        tryAgainAction: () async {
+          if (isLogin) {
+            try {
+              await connectToSendBird();
+              if (argument == null) {
+                _getAndListenToMessage();
+                ChannelListView().removeCurrentAndGo(context);
+              } else if (argument is Merchant) {
+                createChannelWithMerchanInfo(argument).then((channel) {
+                  ChannelView(channelUrl: channel.channelUrl).removeCurrentAndGo(context);
+                });
               } else {
-                await Future.delayed(const Duration(milliseconds: 500));
-                'User is guest'.logger();
+                // createChannelWithProductInfo(argument).then((value) {
+                //   // do magic
+                // });
               }
-            },
-          ),
+            } catch (e) {
+              _chatModule.disconnect();
+              e.logger();
+            }
+          } else {
+            await Future.delayed(const Duration(milliseconds: 500));
+            'User is guest'.logger();
+          }
+        },
+      ).go(context);
+    }
+  }
+
+  Future<GroupChannel> createChannelWithMerchanInfo(Merchant param) async {
+    try {
+      final newChannel = await _sbChannelService.createChannel(
+        name: param.name,
+        operatorUserIds: [],
+        userIds: [
+          _chatModule.currentUser!.userId,
+          param.code!,
+        ],
+        fileInfo: FileInfo.fromUrl(
+          url: param.profilePicture?.url,
+          mimeType: param.profilePicture?.kind,
+          name: param.profilePicture?.filename,
         ),
       );
+      return newChannel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<GroupChannel> createChannelWithProductInfo(ProductDetailData param) async {
+    try {
+      final newChannel = await _sbChannelService.createChannel(
+        name: param.merchant?.name,
+        operatorUserIds: [],
+        userIds: [
+          _chatModule.currentUser!.userId,
+          param.merchant!.code!,
+        ],
+        fileInfo: FileInfo.fromUrl(
+          url: param.merchant?.profilePicture?.url,
+          mimeType: param.merchant?.profilePicture?.kind,
+          name: param.merchant?.profilePicture?.filename,
+        ),
+      );
+      return newChannel;
+    } catch (e) {
+      rethrow;
     }
   }
 }

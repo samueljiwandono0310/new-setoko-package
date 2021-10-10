@@ -1,40 +1,21 @@
-import 'dart:convert';
-
 class Price {
-  Price({
-    this.normal,
-    this.promo,
-    this.subscription,
-  });
+  double? normal;
+  double? promo;
+  double? setoko;
 
-  int? normal;
-  int? promo;
-  int? subscription;
+  Price({this.normal, this.promo, this.setoko});
 
-  Price copyWith({
-    int? normal,
-    int? promo,
-    int? subscription,
-  }) =>
-      Price(
-        normal: normal ?? this.normal,
-        promo: promo ?? this.promo,
-        subscription: subscription ?? this.subscription,
-      );
+  factory Price.fromJson(Map<String, dynamic> json) {
+    return Price(
+      normal: (json['normal'] as num?)?.toDouble(),
+      promo: (json['promo'] as num?)?.toDouble(),
+      setoko: (json['setoko'] as num?)?.toDouble(),
+    );
+  }
 
-  factory Price.fromRawJson(String str) => Price.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
-
-  factory Price.fromJson(Map<String, dynamic> json) => Price(
-        normal: json["normal"],
-        promo: json["promo"],
-        subscription: json["subscription"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "normal": normal,
-        "promo": promo,
-        "subscription": subscription,
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'normal': this.normal,
+        'promo': this.promo,
+        'setoko': this.setoko,
       };
 }
