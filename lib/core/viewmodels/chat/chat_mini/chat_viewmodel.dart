@@ -8,8 +8,7 @@ import 'package:setoko_chat_package/core/modules/chat/chat_module.dart';
 import 'package:setoko_chat_package/core/services/sendbird/sendbird_channel_service.dart';
 import 'package:setoko_chat_package/views/channel/channel_view.dart';
 import 'package:setoko_chat_package/views/channel_list/channel_list_view.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show BuildContext;
 import 'package:mobx/mobx.dart';
 import 'package:setoko_chat_package/core/services/sendbird/sendbird_user_service.dart';
 import 'package:setoko_chat_package/views/error/chat_error_view.dart';
@@ -104,9 +103,9 @@ abstract class _ChatViewModel with Store {
           ChannelView(channelUrl: channel.channelUrl).go(context);
         });
       } else {
-        // createChannelWithProductInfo(argument).then((value) {
-        //   // do magic
-        // });
+        createChannelWithProductInfo(argument).then((channel) {
+          ChannelView(channelUrl: channel.channelUrl, ctProductDetailData: argument).go(context);
+        });
       }
     } else {
       ChatErrorView(
@@ -122,9 +121,9 @@ abstract class _ChatViewModel with Store {
                   ChannelView(channelUrl: channel.channelUrl).removeCurrentAndGo(context);
                 });
               } else {
-                // createChannelWithProductInfo(argument).then((value) {
-                //   // do magic
-                // });
+                createChannelWithProductInfo(argument).then((channel) {
+                  ChannelView(channelUrl: channel.channelUrl, ctProductDetailData: argument).removeCurrentAndGo(context);
+                });
               }
             } catch (e) {
               _chatModule.disconnect();

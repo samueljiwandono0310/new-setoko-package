@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
+import 'package:setoko_chat_package/core/models/product/product_detail.dart';
 import 'package:setoko_chat_package/core/services/sendbird/sendbird_channel_service.dart';
 import 'package:setoko_chat_package/core/utils/assets_path.dart';
 import 'package:setoko_chat_package/core/utils/function_utils.dart';
@@ -33,6 +34,9 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
   User currentUser = _sbUserService.currentUser!;
   final ScrollController lstController = ScrollController();
   Timer? _typingTimer;
+
+  @observable
+  ObservableList<CTProductDetailData> products = ObservableList.of([]);
 
   @observable
   List<BaseMessage> messages = [];
@@ -109,16 +113,17 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
     return (receipt['last_seen_at'] as int).readableOnlinePresence();
   }
 
-  void initState(String channelUrl) {
-    this.channelUrl = channelUrl;
-    _sbHandlerService.addChannelEventHandler(CHANNEL_HANDLER_KEY, this);
-    lstController.addListener(_scrollListener);
-    _loadChannel().then((value) => loadMessages());
-  }
-
   void dispose() {
     _sbHandlerService.removeChannelEventHandler(CHANNEL_HANDLER_KEY);
     channel.endTyping();
+  }
+
+  void initState(String channelUrl, CTProductDetailData? product) {
+    this.channelUrl = channelUrl;
+    addProduct(product);
+    _sbHandlerService.addChannelEventHandler(CHANNEL_HANDLER_KEY, this);
+    lstController.addListener(_scrollListener);
+    _loadChannel().then((value) => loadMessages());
   }
 
   @action
@@ -154,6 +159,20 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
       hasNext = res.length == 20;
     } catch (e) {
       print('group_channel_view.dart: getMessages: ERROR: $e');
+    }
+  }
+
+  @action
+  void addProduct(CTProductDetailData? product) {
+    if (product != null) {
+      products.add(product);
+    }
+  }
+
+  @action
+  void deleteProduct(CTProductDetailData? product) {
+    if (product != null) {
+      products.removeWhere((element) => element.code == product.code);
     }
   }
 

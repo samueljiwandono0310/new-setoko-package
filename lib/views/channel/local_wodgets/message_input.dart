@@ -1,10 +1,13 @@
 import 'package:image_picker/image_picker.dart';
 import 'package:setoko_chat_package/core/constants/enums.dart';
+import 'package:setoko_chat_package/core/models/product/product_detail.dart';
 import 'package:setoko_chat_package/core/viewmodels/chat/channel/channel_viewmodel.dart';
 import 'package:setoko_chat_package/views/atoms/add_attachment_button_widget.dart';
 import 'package:setoko_chat_package/views/atoms/add_emoji_button_widget.dart';
+import 'package:setoko_chat_package/views/atoms/cancel_button_widget.dart';
 import 'package:setoko_chat_package/views/atoms/message_media_widget.dart';
 import 'package:setoko_chat_package/views/atoms/send_message_button_widget.dart';
+import 'package:setoko_chat_package/views/components/product_detail_component.dart';
 import 'package:setoko_chat_package/views/styles/colors.dart';
 import 'package:setoko_chat_package/views/styles/text_styles.dart';
 import 'package:flutter/material.dart';
@@ -14,11 +17,13 @@ import 'package:provider/provider.dart';
 class MessageInput extends StatefulWidget {
   final Function(String) onPressSend;
   final Function(String) onChanged;
+  final CTProductDetailData? ctProductDetailData;
 
   MessageInput({
+    Key? key,
     required this.onPressSend,
     required this.onChanged,
-    Key? key,
+    this.ctProductDetailData,
   }) : super(key: key);
 
   @override
@@ -57,8 +62,9 @@ class _MessageInputState extends State<MessageInput> {
             key: _formKey,
             child: Column(
               children: [
+                _buildProductList(_viewModel),
                 _buildMainInput(_viewModel, context),
-                const SizedBox(height: 19),
+                if (isShowMediaOption) const SizedBox(height: 19),
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 200),
                   transitionBuilder: (child, animation) {
@@ -72,6 +78,53 @@ class _MessageInputState extends State<MessageInput> {
                 ),
               ],
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildProductList(ChannelViewModel viewModel) {
+    return Observer(
+      builder: (context) {
+        if (viewModel.products.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return SizedBox(
+          height: 125,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+            itemCount: viewModel.products.length,
+            itemBuilder: (context, index) {
+              return Container(
+                width: 307,
+                height: 79,
+                margin: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  color: ChatColors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black54,
+                      spreadRadius: 0,
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  children: [
+                    ProductDetailComponent(ctProductDetailData: widget.ctProductDetailData),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: CancelButtonWidget(onPressed: () => viewModel.deleteProduct(viewModel.products[index])),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         );
       },
