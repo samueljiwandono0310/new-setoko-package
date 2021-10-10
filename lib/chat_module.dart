@@ -1,6 +1,7 @@
 library setoko_chat_package;
 
 // SendBird Internal
+export 'package:sendbird_sdk/core/models/file_info.dart';
 export 'package:sendbird_sdk/core/channel/group/group_channel.dart';
 
 // Chat Module
