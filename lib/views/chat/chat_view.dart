@@ -17,13 +17,15 @@ class ChatView extends StatefulWidget {
   final ChatUserArgument? chatUserArgument;
   final CTProductDetailData? productDetailData;
   final CTMerchant? merchant;
+  final Function()? extraAction;
 
   const ChatView.fromHome({
     Key? key,
     this.size,
     this.color,
-    this.chatArgument,
-    this.chatUserArgument,
+    this.extraAction,
+    required this.chatArgument,
+    required this.chatUserArgument,
   })  : directToDetail = false,
         productDetailData = null,
         merchant = null,
@@ -33,7 +35,8 @@ class ChatView extends StatefulWidget {
     Key? key,
     this.size,
     this.color,
-    this.merchant,
+    this.extraAction,
+    required this.merchant,
   })  : directToDetail = true,
         chatArgument = null,
         chatUserArgument = null,
@@ -44,7 +47,8 @@ class ChatView extends StatefulWidget {
     Key? key,
     this.size,
     this.color,
-    this.productDetailData,
+    this.extraAction,
+    required this.productDetailData,
   })  : directToDetail = true,
         chatArgument = null,
         chatUserArgument = null,
@@ -83,10 +87,15 @@ class _ChatViewState extends State<ChatView> {
   Widget build(BuildContext context) {
     return IconButton(
       padding: EdgeInsets.zero,
-      onPressed: () => viewModel.goToChat(
-        context,
-        widget.merchant ?? widget.productDetailData ?? null,
-      ),
+      onPressed: () {
+        if (widget.extraAction != null) {
+          widget.extraAction!();
+        }
+        viewModel.goToChat(
+          context,
+          widget.merchant ?? widget.productDetailData ?? null,
+        );
+      },
       icon: Container(
         width: 42,
         height: 42,
