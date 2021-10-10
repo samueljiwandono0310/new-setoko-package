@@ -5,7 +5,7 @@ import 'package:setoko_chat_package/core/models/product/price.dart';
 import 'package:setoko_chat_package/core/models/product/primary_category.dart';
 import 'package:setoko_chat_package/core/models/product/review.dart';
 
-class ProductDetailData {
+class CTProductDetailData {
   String? code;
   String? name;
   int? favorites;
@@ -17,12 +17,12 @@ class ProductDetailData {
   List<Medias>? medias;
   PrimaryCategory? primaryCategory;
   Brand? brand;
-  Merchant? merchant;
+  CTMerchant? merchant;
   double? ratingAverage;
   int? reviewCount;
   List<Review>? reviews;
 
-  ProductDetailData({
+  CTProductDetailData({
     this.code,
     this.name,
     this.favorites,
@@ -40,8 +40,8 @@ class ProductDetailData {
     this.reviews,
   });
 
-  factory ProductDetailData.fromJson(Map<String, dynamic> json) {
-    return ProductDetailData(
+  factory CTProductDetailData.fromJson(Map<String, dynamic> json) {
+    return CTProductDetailData(
       code: json['code'] as String?,
       name: json['name'] as String?,
       favorites: json['favorites'] as int?,
@@ -53,7 +53,7 @@ class ProductDetailData {
       medias: (json['medias'] as List<dynamic>?)?.map((e) => Medias.fromJson(e as Map<String, dynamic>)).toList(),
       primaryCategory: json['primaryCategory'] == null ? null : PrimaryCategory.fromJson(json['primaryCategory'] as Map<String, dynamic>),
       brand: json['brand'] == null ? null : Brand.fromJson(json['brand'] as Map<String, dynamic>),
-      merchant: json['merchant'] == null ? null : Merchant.fromJson(json['merchant'] as Map<String, dynamic>),
+      merchant: json['merchant'] == null ? null : CTMerchant.fromJson(json['merchant'] as Map<String, dynamic>),
       ratingAverage: (json['ratingAverage'] as num?)?.toDouble(),
       reviewCount: json['reviewCount'] as int?,
       reviews: (json['reviews'] as List<dynamic>?)?.map((e) => Review.fromJson(e as Map<String, dynamic>)).toList(),

@@ -15,8 +15,8 @@ class ChatView extends StatefulWidget {
   final bool directToDetail;
   final ChatArgument? chatArgument;
   final ChatUserArgument? chatUserArgument;
-  final ProductDetailData? productDetailData;
-  final Merchant? merchant;
+  final CTProductDetailData? productDetailData;
+  final CTMerchant? merchant;
 
   const ChatView.fromHome({
     Key? key,

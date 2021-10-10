@@ -99,7 +99,7 @@ abstract class _ChatViewModel with Store {
     if (_chatModule.currentUser != null) {
       if (argument == null) {
         ChannelListView().go(context);
-      } else if (argument is Merchant) {
+      } else if (argument is CTMerchant) {
         createChannelWithMerchanInfo(argument).then((channel) {
           ChannelView(channelUrl: channel.channelUrl).go(context);
         });
@@ -117,7 +117,7 @@ abstract class _ChatViewModel with Store {
               if (argument == null) {
                 _getAndListenToMessage();
                 ChannelListView().removeCurrentAndGo(context);
-              } else if (argument is Merchant) {
+              } else if (argument is CTMerchant) {
                 createChannelWithMerchanInfo(argument).then((channel) {
                   ChannelView(channelUrl: channel.channelUrl).removeCurrentAndGo(context);
                 });
@@ -139,7 +139,7 @@ abstract class _ChatViewModel with Store {
     }
   }
 
-  Future<GroupChannel> createChannelWithMerchanInfo(Merchant param) async {
+  Future<GroupChannel> createChannelWithMerchanInfo(CTMerchant param) async {
     try {
       final newChannel = await _sbChannelService.createChannel(
         name: param.name,
@@ -160,7 +160,7 @@ abstract class _ChatViewModel with Store {
     }
   }
 
-  Future<GroupChannel> createChannelWithProductInfo(ProductDetailData param) async {
+  Future<GroupChannel> createChannelWithProductInfo(CTProductDetailData param) async {
     try {
       final newChannel = await _sbChannelService.createChannel(
         name: param.merchant?.name,
