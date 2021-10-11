@@ -18,7 +18,7 @@ class ProductDetailComponent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         CacheableImageWidget(
-          imageUrl: ctProductDetailData?.medias?[0].url,
+          imageUrl: ctProductDetailData?.medias[0].url,
           imageBuilder: (context, imageProvider) {
             return Image(
               width: 44,
