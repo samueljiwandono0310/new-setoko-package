@@ -36,8 +36,8 @@ class ProductDetailComponent extends StatelessWidget {
             children: [
               CTTextWidget(
                 maxLines: 1,
-                text: ctProductDetailData?.name ?? 'null',
                 textStyle: ChatTextStyles.textStyle13,
+                text: ctProductDetailData?.name ?? 'null',
               ),
               const SizedBox(height: 8),
               Row(
