@@ -226,10 +226,10 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
 
   @action
   Future onSendProductMessage(CTProductDetailData product) async {
-    final params = UserMessageParams(message: product.medias![0].url!, metaArrays: [
+    final params = UserMessageParams(message: product.medias[0].url!, metaArrays: [
       MessageMetaArray(key: 'code', value: [product.code ?? '']),
-      MessageMetaArray(key: 'mimeType', value: [product.medias![0].kind ?? '']),
-      MessageMetaArray(key: 'name', value: [product.medias![0].filename ?? ''])
+      MessageMetaArray(key: 'mimeType', value: [product.medias[0].kind ?? '']),
+      MessageMetaArray(key: 'name', value: [product.medias[0].filename ?? ''])
     ]);
 
     final preMessage = channel.sendUserMessage(params, onCompleted: (msg, error) {
@@ -441,7 +441,7 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
   void sendAttachedProducts() {
     if (products.isNotEmpty) {
       for (var product in products) {
-        onSendProductMessage(product);
+        onSendProductMessage(product).whenComplete(() => deleteProduct(product));
       }
     }
   }

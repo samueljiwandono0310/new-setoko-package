@@ -14,13 +14,13 @@ class CTProductDetailData {
   String? description;
   double? weight;
   String? youtube;
-  List<Medias>? medias;
+  List<Medias> medias = [];
   PrimaryCategory? primaryCategory;
   Brand? brand;
   CTMerchant? merchant;
   double? ratingAverage;
   int? reviewCount;
-  List<Review>? reviews;
+  List<Review> reviews = [];
 
   CTProductDetailData({
     this.code,
@@ -31,33 +31,67 @@ class CTProductDetailData {
     this.description,
     this.weight,
     this.youtube,
-    this.medias,
+    this.medias = const [],
     this.primaryCategory,
     this.brand,
     this.merchant,
     this.ratingAverage,
     this.reviewCount,
-    this.reviews,
+    this.reviews = const [],
   });
 
-  factory CTProductDetailData.fromJson(Map<String, dynamic> json) {
-    return CTProductDetailData(
-      code: json['code'] as String?,
-      name: json['name'] as String?,
-      favorites: json['favorites'] as int?,
-      stock: json['stock'] as int?,
-      price: json['price'] == null ? null : Price.fromJson(json['price'] as Map<String, dynamic>),
-      description: json['description'] as String?,
-      weight: (json['weight'] as num?)?.toDouble(),
-      youtube: json['youtube'] as String?,
-      medias: (json['medias'] as List<dynamic>?)?.map((e) => Medias.fromJson(e as Map<String, dynamic>)).toList(),
-      primaryCategory: json['primaryCategory'] == null ? null : PrimaryCategory.fromJson(json['primaryCategory'] as Map<String, dynamic>),
-      brand: json['brand'] == null ? null : Brand.fromJson(json['brand'] as Map<String, dynamic>),
-      merchant: json['merchant'] == null ? null : CTMerchant.fromJson(json['merchant'] as Map<String, dynamic>),
-      ratingAverage: (json['ratingAverage'] as num?)?.toDouble(),
-      reviewCount: json['reviewCount'] as int?,
-      reviews: (json['reviews'] as List<dynamic>?)?.map((e) => Review.fromJson(e as Map<String, dynamic>)).toList(),
-    );
+  CTProductDetailData.fromJson(Map<String, dynamic> json) {
+    this.code = json['code'];
+    this.name = json['name'];
+    this.favorites = json['favorites'];
+    this.stock = json['stock'];
+    this.price = json['price'] == null
+        ? null
+        : json['price'].runtimeType is! Map<String, dynamic>
+            ? Price.fromJson(json['price'].toJson())
+            : Price.fromJson(json['price'] as Map<String, dynamic>);
+    this.description = json['description'];
+    this.weight = json['weight'];
+    this.youtube = json['youtube'];
+    if (json["medias"] != null && json["medias"].isNotEmpty) {
+      json["medias"].forEach((e) {
+        if (e is! Map<String, dynamic>) {
+          this.medias.add(Medias.fromJson(e.toJson()));
+        } else {
+          this.medias.add(Medias.fromJson(e));
+        }
+      });
+    } else {
+      this.medias = [];
+    }
+    this.primaryCategory = json['primaryCategory'] == null
+        ? null
+        : json['primaryCategory'].runtimeType is! Map<String, dynamic>
+            ? PrimaryCategory.fromJson(json['primaryCategory'].toJson())
+            : PrimaryCategory.fromJson(json['primaryCategory'] as Map<String, dynamic>);
+    this.brand = json['brand'] == null
+        ? null
+        : json['brand'].runtimeType is! Map<String, dynamic>
+            ? Brand.fromJson(json['brand'].toJson())
+            : Brand.fromJson(json['brand'] as Map<String, dynamic>);
+    this.merchant = json['merchant'] == null
+        ? null
+        : json['merchant'].runtimeType is! Map<String, dynamic>
+            ? CTMerchant.fromJson(json['merchant'].toJson())
+            : CTMerchant.fromJson(json['merchant'] as Map<String, dynamic>);
+    this.ratingAverage = json['ratingAverage'];
+    this.reviewCount = json['reviewCount'];
+    if (json["reviews"] != null && json["reviews"].isNotEmpty) {
+      json["reviews"].forEach((e) {
+        if (e is! Map<String, dynamic>) {
+          this.reviews.add(Review.fromJson(e.toJson()));
+        } else {
+          this.reviews.add(Review.fromJson(e));
+        }
+      });
+    } else {
+      this.reviews = [];
+    }
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{

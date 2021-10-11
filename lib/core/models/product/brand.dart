@@ -13,7 +13,7 @@ class Brand {
       code: json['code'] as String?,
       name: json['name'] as String?,
       creativeName: json['creativeName'] as String?,
-      logo: json['logo'] == null ? null : Logo.fromJson(json['logo'] as Map<String, dynamic>),
+      logo: json['logo'] == null ? null : json['logo'].runtimeType is! Map<String, dynamic> ? Logo.fromJson(json['logo'].toJson()) : Logo.fromJson(json['logo'] as Map<String, dynamic>),
     );
   }
 
