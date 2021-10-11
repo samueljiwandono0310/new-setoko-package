@@ -226,12 +226,13 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
 
   @action
   Future onSendProductMessage(CTProductDetailData product) async {
-    final params = FileMessageParams.withUrl(
-      product.medias![0].url!,
-      mimeType: product.medias![0].kind,
-      name: product.medias![0].filename,
-    );
-    final preMessage = channel.sendFileMessage(params, onCompleted: (msg, error) {
+    final params = UserMessageParams(message: product.medias![0].url!, metaArrays: [
+      MessageMetaArray(key: 'code', value: [product.code ?? '']),
+      MessageMetaArray(key: 'mimeType', value: [product.medias![0].kind ?? '']),
+      MessageMetaArray(key: 'name', value: [product.medias![0].filename ?? ''])
+    ]);
+
+    final preMessage = channel.sendUserMessage(params, onCompleted: (msg, error) {
       final index = messages.indexWhere((element) => element.requestId == msg.requestId);
       if (index != -1) messages.removeAt(index);
       messages = [msg, ...messages];
