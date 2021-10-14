@@ -6,32 +6,43 @@ class Review {
   Reviewer? reviewer;
   int? rating;
   String? comment;
-  List<ReviewMedia>? medias;
+  List<ReviewMedia> medias = [];
   DateTime? createdAt;
   ReviewMerchantFeedback? merchantFeedback;
-  List<String>? tags;
+  List<String> tags = [];
   Review({
     this.reviewer,
     this.rating,
     this.comment,
-    this.medias,
+    this.medias = const [],
     this.createdAt,
-    this.tags,
+    this.tags = const [],
   });
 
-  factory Review.fromJson(Map<String, dynamic> json) {
-    return Review(
-      reviewer: json['reviewer'] == null ? null : Reviewer.fromJson(json['reviewer'] as Map<String, dynamic>),
-      rating: json['rating'] as int?,
-      comment: json['comment'] as String?,
-      medias: (json['medias'] as List<dynamic>?)?.map((e) => ReviewMedia.fromJson(e as Map<String, dynamic>)).toList(),
-      createdAt: json['createdAt'] == null ? null : DateTime.parse(json['createdAt'] as String),
-      tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
-    )..merchantFeedback = json['merchantFeedback'] == null
-        ? null
-        : ReviewMerchantFeedback.fromJson(
-            json['merchantFeedback'] as Map<String, dynamic>,
-          );
+  Review.fromJson(Map<String, dynamic> json) {
+    this.reviewer = json['reviewer'] == null ? null : json['reviewer'].runtimeType is! Map<String, dynamic> ? Reviewer.fromJson(json['reviewer'].toJson()) : Reviewer.fromJson(json['reviewer'] as Map<String, dynamic>);
+    this.rating = json['rating'];
+    this.comment = json['comment'];
+    if (json["medias"] != null && json["medias"].isNotEmpty) {
+      json["medias"].forEach((e) {
+        if (e is! Map<String, dynamic>) {
+          this.medias.add(ReviewMedia.fromJson(e.toJson()));
+        } else {
+          this.medias.add(ReviewMedia.fromJson(e));
+        }
+      });
+    } else {
+      this.medias = [];
+    }
+    this.createdAt = json['createdAt'] == null ? null : DateTime.parse(json['createdAt'] as String);
+    if (json["tags"] != null && json["tags"].isNotEmpty) {
+      json["tags"].forEach((e) {
+        this.tags.add(e);
+      });
+    } else {
+      this.tags = [];
+    }
+    this.merchantFeedback = json['merchantFeedback'] == null ? null : json['merchantFeedback'].runtimeType is! Map<String, dynamic> ? ReviewMerchantFeedback.fromJson(json['merchantFeedback'].toJson()) : ReviewMerchantFeedback.fromJson(json['merchantFeedback'] as Map<String, dynamic>);
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{

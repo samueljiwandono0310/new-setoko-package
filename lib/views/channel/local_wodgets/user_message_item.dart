@@ -33,6 +33,7 @@ class UserMessageItem extends MessageItem {
         ),
         padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
         child: CTTextWidget(
+          maxLines: null,
           text: curr.message,
           textStyle: (isMyMessage ?? false) ? ChatTextStyles.textStyle9 : ChatTextStyles.textStyle8,
         ),

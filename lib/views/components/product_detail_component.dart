@@ -18,7 +18,7 @@ class ProductDetailComponent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         CacheableImageWidget(
-          imageUrl: ctProductDetailData?.medias?[0].url,
+          imageUrl: ctProductDetailData?.medias[0].url,
           imageBuilder: (context, imageProvider) {
             return Image(
               width: 44,
@@ -36,8 +36,8 @@ class ProductDetailComponent extends StatelessWidget {
             children: [
               CTTextWidget(
                 maxLines: 1,
-                text: ctProductDetailData?.name ?? 'null',
                 textStyle: ChatTextStyles.textStyle13,
+                text: ctProductDetailData?.name ?? 'null',
               ),
               const SizedBox(height: 8),
               Row(

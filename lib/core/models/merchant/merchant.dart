@@ -17,9 +17,11 @@ class CTMerchant {
       sellerType: json['sellerType'] as String?,
       profilePicture: json['profilePicture'] == null
           ? null
-          : ProfilePicture.fromJson(
-              json['profilePicture'] as Map<String, dynamic>,
-            ),
+          : json['logo'].runtimeType is! Map<String, dynamic>
+              ? ProfilePicture.fromJson(json['profilePicture'].toJson())
+              : ProfilePicture.fromJson(
+                  json['profilePicture'] as Map<String, dynamic>,
+                ),
     );
   }
 
