@@ -155,12 +155,7 @@ abstract class _ChannelListViewModel with Store, ChannelEventHandler {
 
   @action
   void gotoChannel(BuildContext context, GroupChannel channel) {
-    Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => ChannelView(channelUrl: channel.channelUrl),
-      ),
-    ).whenComplete(() => channels = [...channels]);
+    ChannelView(channelUrl: channel.channelUrl).go(context).whenComplete(() => channels = [...channels]);
   }
 
   @action

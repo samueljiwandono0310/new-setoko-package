@@ -66,6 +66,21 @@ mixin _$ChannelViewModel on _ChannelViewModel, Store {
               name: '_ChannelViewModel.lastSeenText'))
           .value;
 
+  final _$productsAtom = Atom(name: '_ChannelViewModel.products');
+
+  @override
+  ObservableList<CTProductDetailData> get products {
+    _$productsAtom.reportRead();
+    return super.products;
+  }
+
+  @override
+  set products(ObservableList<CTProductDetailData> value) {
+    _$productsAtom.reportWrite(value, super.products, () {
+      super.products = value;
+    });
+  }
+
   final _$messagesAtom = Atom(name: '_ChannelViewModel.messages');
 
   @override
@@ -199,12 +214,12 @@ mixin _$ChannelViewModel on _ChannelViewModel, Store {
     return _$_loadChannelAsyncAction.run(() => super._loadChannel());
   }
 
-  final _$_loadMessagesAsyncAction =
-      AsyncAction('_ChannelViewModel._loadMessages');
+  final _$loadMessagesAsyncAction =
+      AsyncAction('_ChannelViewModel.loadMessages');
 
   @override
   Future<void> loadMessages({int? timestamp, bool reload = false}) {
-    return _$_loadMessagesAsyncAction
+    return _$loadMessagesAsyncAction
         .run(() => super.loadMessages(timestamp: timestamp, reload: reload));
   }
 
@@ -226,6 +241,15 @@ mixin _$ChannelViewModel on _ChannelViewModel, Store {
         .run(() => super.onSendFileMessage(file));
   }
 
+  final _$onSendProductMessageAsyncAction =
+      AsyncAction('_ChannelViewModel.onSendProductMessage');
+
+  @override
+  Future<dynamic> onSendProductMessage(CTProductDetailData product) {
+    return _$onSendProductMessageAsyncAction
+        .run(() => super.onSendProductMessage(product));
+  }
+
   final _$showMessageMenuAsyncAction =
       AsyncAction('_ChannelViewModel.showMessageMenu');
 
@@ -240,6 +264,28 @@ mixin _$ChannelViewModel on _ChannelViewModel, Store {
 
   final _$_ChannelViewModelActionController =
       ActionController(name: '_ChannelViewModel');
+
+  @override
+  void addProduct(CTProductDetailData? product) {
+    final _$actionInfo = _$_ChannelViewModelActionController.startAction(
+        name: '_ChannelViewModel.addProduct');
+    try {
+      return super.addProduct(product);
+    } finally {
+      _$_ChannelViewModelActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void deleteProduct(CTProductDetailData? product) {
+    final _$actionInfo = _$_ChannelViewModelActionController.startAction(
+        name: '_ChannelViewModel.deleteProduct');
+    try {
+      return super.deleteProduct(product);
+    } finally {
+      _$_ChannelViewModelActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void showMediaMessage(bool value) {
@@ -344,6 +390,7 @@ mixin _$ChannelViewModel on _ChannelViewModel, Store {
   @override
   String toString() {
     return '''
+products: ${products},
 messages: ${messages},
 selectedMessage: ${selectedMessage},
 hasNext: ${hasNext},

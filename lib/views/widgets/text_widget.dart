@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CTTextWidget extends StatelessWidget {
   final String text;
-  final int maxLines;
+  final int? maxLines;
   final TextStyle textStyle;
   final TextAlign? textAlign;
   const CTTextWidget({

@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
+import 'package:setoko_chat_package/core/models/product/product_detail.dart';
+import 'package:setoko_chat_package/core/services/sendbird/sendbird_channel_service.dart';
 import 'package:setoko_chat_package/core/utils/assets_path.dart';
 import 'package:setoko_chat_package/core/utils/function_utils.dart';
 import 'package:setoko_chat_package/views/styles/colors.dart';
@@ -25,12 +27,16 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
   static final _funtionUtils = FunctionUtils();
   static final _sbUserService = SendBirdUserService();
   static final _sbHandlerService = SendBirdHandlerService();
+  static final _sbChannelService = SendBirdChannelService();
 
   late String channelUrl;
 
   User currentUser = _sbUserService.currentUser!;
   final ScrollController lstController = ScrollController();
   Timer? _typingTimer;
+
+  @observable
+  ObservableList<CTProductDetailData> products = ObservableList.of([]);
 
   @observable
   List<BaseMessage> messages = [];
@@ -107,21 +113,22 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
     return (receipt['last_seen_at'] as int).readableOnlinePresence();
   }
 
-  void initState(String channelUrl) {
-    this.channelUrl = channelUrl;
-    _sbHandlerService.addChannelEventHandler(CHANNEL_HANDLER_KEY, this);
-    lstController.addListener(_scrollListener);
-    _loadChannel().then((value) => loadMessages());
-  }
-
   void dispose() {
     _sbHandlerService.removeChannelEventHandler(CHANNEL_HANDLER_KEY);
     channel.endTyping();
   }
 
+  void initState(String channelUrl, CTProductDetailData? product) {
+    this.channelUrl = channelUrl;
+    addProduct(product);
+    _sbHandlerService.addChannelEventHandler(CHANNEL_HANDLER_KEY, this);
+    lstController.addListener(_scrollListener);
+    _loadChannel().then((value) => loadMessages());
+  }
+
   @action
   Future<void> _loadChannel() async {
-    _getChannelFuture = ObservableFuture<GroupChannel>(_sbHandlerService.getChannel(channelUrl));
+    _getChannelFuture = ObservableFuture<GroupChannel>(_sbChannelService.getChannel(channelUrl));
     final res = await _getChannelFuture;
     _channel = res;
     channel.markAsRead();
@@ -152,6 +159,20 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
       hasNext = res.length == 20;
     } catch (e) {
       print('group_channel_view.dart: getMessages: ERROR: $e');
+    }
+  }
+
+  @action
+  void addProduct(CTProductDetailData? product) {
+    if (product != null) {
+      products.add(product);
+    }
+  }
+
+  @action
+  void deleteProduct(CTProductDetailData? product) {
+    if (product != null) {
+      products.removeWhere((element) => element.code == product.code);
     }
   }
 
@@ -187,6 +208,31 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
   Future onSendFileMessage(File file) async {
     final params = FileMessageParams.withFile(file);
     final preMessage = channel.sendFileMessage(params, onCompleted: (msg, error) {
+      final index = messages.indexWhere((element) => element.requestId == msg.requestId);
+      if (index != -1) messages.removeAt(index);
+      messages = [msg, ...messages];
+      messages.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      markAsReadDebounce();
+    });
+
+    messages = [preMessage, ...messages];
+
+    lstController.animateTo(
+      0.0,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
+  @action
+  Future onSendProductMessage(CTProductDetailData product) async {
+    final params = UserMessageParams(message: product.medias[0].url!, metaArrays: [
+      MessageMetaArray(key: 'code', value: [product.code ?? '']),
+      MessageMetaArray(key: 'mimeType', value: [product.medias[0].kind ?? '']),
+      MessageMetaArray(key: 'name', value: [product.medias[0].filename ?? ''])
+    ]);
+
+    final preMessage = channel.sendUserMessage(params, onCompleted: (msg, error) {
       final index = messages.indexWhere((element) => element.requestId == msg.requestId);
       if (index != -1) messages.removeAt(index);
       messages = [msg, ...messages];
@@ -390,5 +436,13 @@ abstract class _ChannelViewModel with Store, ChannelEventHandler {
       }
     }
     showMediaMessage(false);
+  }
+
+  void sendAttachedProducts() {
+    if (products.isNotEmpty) {
+      for (var product in products) {
+        onSendProductMessage(product).whenComplete(() => deleteProduct(product));
+      }
+    }
   }
 }

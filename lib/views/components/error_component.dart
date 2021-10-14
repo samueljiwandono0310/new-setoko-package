@@ -24,8 +24,8 @@ class ErrorComponent extends StatelessWidget {
                   size: 200,
                 ),
                 CTTextWidget(
-                  text: "Oops something went wrong, make sure you have a good internet connection",
-                  maxLines: 2,
+                  text: "Oops something went wrong, make sure you have a good internet connection and make sure you're logged in or already registered in the Setoko",
+                  maxLines: 3,
                   textAlign: TextAlign.center,
                   textStyle: ChatTextStyles.textStyle21,
                 ),
