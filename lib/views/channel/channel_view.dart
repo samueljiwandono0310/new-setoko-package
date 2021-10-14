@@ -1,3 +1,4 @@
+import 'package:setoko_chat_package/core/models/product/product_detail.dart';
 import 'package:setoko_chat_package/core/viewmodels/chat/channel/channel_viewmodel.dart';
 import 'package:setoko_chat_package/views/channel/local_wodgets/channel_content.dart';
 import 'package:setoko_chat_package/views/channel/local_wodgets/channel_header.dart';
@@ -10,18 +11,23 @@ import 'package:provider/provider.dart';
 
 class ChannelView extends StatefulWidget {
   final String channelUrl;
-  const ChannelView({required this.channelUrl, Key? key}) : super(key: key);
+  final CTProductDetailData? ctProductDetailData;
+  const ChannelView({
+    Key? key,
+    required this.channelUrl,
+    this.ctProductDetailData,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ChannelViewState();
 }
 
 class _ChannelViewState extends State<ChannelView> {
-  ChannelViewModel _viewModel = ChannelViewModel();
+  final _viewModel = ChannelViewModel();
 
   @override
   void initState() {
-    _viewModel.initState(widget.channelUrl);
+    _viewModel.initState(widget.channelUrl, widget.ctProductDetailData);
     super.initState();
   }
 
@@ -47,6 +53,7 @@ class _ChannelViewState extends State<ChannelView> {
               children: [
                 ChannelContent(),
                 MessageInput(
+                  ctProductDetailData: widget.ctProductDetailData,
                   onPressSend: (text) {
                     _viewModel.onSendUserMessage(text);
                   },

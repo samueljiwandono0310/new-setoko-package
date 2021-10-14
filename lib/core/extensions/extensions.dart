@@ -1,26 +1,28 @@
+import 'dart:io';
 import 'package:intl/intl.dart';
-import 'package:sendbird_sdk/core/message/base_message.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:sendbird_sdk/core/models/user.dart';
+import 'package:sendbird_sdk/core/message/base_message.dart';
 
 extension Message on BaseMessage {
   bool isMyMessage({required User? currentUser}) => sender?.userId == currentUser?.userId;
 }
 
-extension CustomDateUtils on int {
-  String get readableUnreadCount => this < 1
+extension NumberUtils on num? {
+  String get readableUnreadCount => this! < 1
       ? ''
-      : this <= 99
+      : this! <= 99
           ? '$this'
           : '99+';
 
   String readableTimestamp() {
     final formatter = new DateFormat.MMMd();
-    final date = new DateTime.fromMillisecondsSinceEpoch(this);
+    final date = new DateTime.fromMillisecondsSinceEpoch(int.parse('${this}'));
     return formatter.format(date);
   }
 
   String readableOnlinePresence() {
-    final date = new DateTime.fromMillisecondsSinceEpoch(this).toLocal();
+    final date = new DateTime.fromMillisecondsSinceEpoch(int.parse('${this}')).toLocal();
     final now = DateTime.now().toLocal();
     final online = 'Online';
     final lastSeen = 'Last seen';
@@ -42,6 +44,9 @@ extension CustomDateUtils on int {
     }
     return '';
   }
+
+  String get readablePrice => this != null ? NumberFormat.simpleCurrency(
+          locale: Platform.localeName, decimalDigits: 0).format(this) : 'null';
 }
 
 extension CustomListExtension<T> on List<T> {
@@ -66,5 +71,35 @@ extension CustomListExtension<T> on List<T> {
   /// Removes all `null`s from the [List].
   void removeNulls() {
     removeWhere((element) => element == null);
+  }
+}
+
+extension NavigatorExtension on Widget {
+  // push
+  Future<T?> go<T extends Object?>(
+    BuildContext context, {
+    bool rootNav = false,
+  }) {
+    return Navigator.of(context, rootNavigator: rootNav).push(
+      CupertinoPageRoute(builder: (context) => this),
+    );
+  }
+
+  // push replacement
+  Future removeCurrentAndGo(
+    BuildContext context, {
+    bool rootNav = false,
+  }) {
+    return Navigator.of(context, rootNavigator: rootNav).pushReplacement(
+      CupertinoPageRoute(builder: (context) => this),
+    );
+  }
+
+  // pop
+  void back<T extends Object?>(
+    BuildContext context, {
+    bool rootNav = false,
+  }) {
+    return Navigator.of(context, rootNavigator: rootNav).pop(context);
   }
 }

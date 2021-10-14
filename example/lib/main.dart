@@ -61,29 +61,30 @@ class _MyHomePageState extends State<MyHomePage> with SessionEventHandler {
       },
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.white,
           centerTitle: false,
           leadingWidth: 20,
           title: const Text(
             'Setoko Chat',
           ),
-          actions: [
-            ValueListenableBuilder<bool>(
-              valueListenable: _isLoading,
-              builder: (context, value, child) {
-                return ChatView(
-                  key: ValueKey<bool>(_isLoggedIn),
-                  chatArgument: ChatArgument()
-                    ..isLogin = _isLoggedIn
-                    ..loginPathState = _isLoggedIn
-                    ..registerPathState = _isLoggedIn,
-                  chatUserArgument: ChatUserArgument(
-                    userId: userNameController.text,
-                    nickname: nickNameController.text,
-                  ),
-                );
-              },
-            )
-          ],
+          // actions: [
+          //   ValueListenableBuilder<bool>(
+          //     valueListenable: _isLoading,
+          //     builder: (context, value, child) {
+          //       return ChatView(
+          //         key: ValueKey<bool>(_isLoggedIn),
+          //         chatArgument: ChatArgument()
+          //           ..isLogin = _isLoggedIn
+          //           ..loginPathState = _isLoggedIn
+          //           ..registerPathState = _isLoggedIn,
+          //         chatUserArgument: ChatUserArgument(
+          //           userId: userNameController.text,
+          //           nickname: nickNameController.text,
+          //         ),
+          //       );
+          //     },
+          //   )
+          // ],
         ),
         body: SizedBox(
           width: size.width,
