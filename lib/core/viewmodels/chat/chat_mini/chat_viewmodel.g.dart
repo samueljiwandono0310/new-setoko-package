@@ -17,36 +17,6 @@ mixin _$ChatViewModel on _ChatViewModel, Store {
           name: '_ChatViewModel.totalUnreadCount'))
       .value;
 
-  final _$isDisposedAtom = Atom(name: '_ChatViewModel.isDisposed');
-
-  @override
-  bool get isDisposed {
-    _$isDisposedAtom.reportRead();
-    return super.isDisposed;
-  }
-
-  @override
-  set isDisposed(bool value) {
-    _$isDisposedAtom.reportWrite(value, super.isDisposed, () {
-      super.isDisposed = value;
-    });
-  }
-
-  final _$isUserNotNullAtom = Atom(name: '_ChatViewModel.isUserNotNull');
-
-  @override
-  bool get isUserNotNull {
-    _$isUserNotNullAtom.reportRead();
-    return super.isUserNotNull;
-  }
-
-  @override
-  set isUserNotNull(bool value) {
-    _$isUserNotNullAtom.reportWrite(value, super.isUserNotNull, () {
-      super.isUserNotNull = value;
-    });
-  }
-
   final _$_totalUnreadCountAtom =
       Atom(name: '_ChatViewModel._totalUnreadCount');
 
@@ -63,6 +33,62 @@ mixin _$ChatViewModel on _ChatViewModel, Store {
     });
   }
 
+  final _$isLoginAtom = Atom(name: '_ChatViewModel.isLogin');
+
+  @override
+  bool get isLogin {
+    _$isLoginAtom.reportRead();
+    return super.isLogin;
+  }
+
+  @override
+  set isLogin(bool value) {
+    _$isLoginAtom.reportWrite(value, super.isLogin, () {
+      super.isLogin = value;
+    });
+  }
+
+  final _$loginPathStateAtom = Atom(name: '_ChatViewModel.loginPathState');
+
+  @override
+  bool get loginPathState {
+    _$loginPathStateAtom.reportRead();
+    return super.loginPathState;
+  }
+
+  @override
+  set loginPathState(bool value) {
+    _$loginPathStateAtom.reportWrite(value, super.loginPathState, () {
+      super.loginPathState = value;
+    });
+  }
+
+  final _$registerPathStateAtom =
+      Atom(name: '_ChatViewModel.registerPathState');
+
+  @override
+  bool get registerPathState {
+    _$registerPathStateAtom.reportRead();
+    return super.registerPathState;
+  }
+
+  @override
+  set registerPathState(bool value) {
+    _$registerPathStateAtom.reportWrite(value, super.registerPathState, () {
+      super.registerPathState = value;
+    });
+  }
+
+  final _$initStateAsyncAction = AsyncAction('_ChatViewModel.initState');
+
+  @override
+  Future<void> initState(
+      {required ChatArgument chatArgument,
+      required ChatUserArgument chatUserArgument}) {
+    return _$initStateAsyncAction.run(() => super.initState(
+        chatArgument: chatArgument, chatUserArgument: chatUserArgument));
+  }
+
   final _$_getAndListenToMessageAsyncAction =
       AsyncAction('_ChatViewModel._getAndListenToMessage');
 
@@ -76,33 +102,11 @@ mixin _$ChatViewModel on _ChatViewModel, Store {
       ActionController(name: '_ChatViewModel');
 
   @override
-  void _setupDisposer() {
-    final _$actionInfo = _$_ChatViewModelActionController.startAction(
-        name: '_ChatViewModel._setupDisposer');
-    try {
-      return super._setupDisposer();
-    } finally {
-      _$_ChatViewModelActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void _setupPeriodicTimerIfNoInternet() {
-    final _$actionInfo = _$_ChatViewModelActionController.startAction(
-        name: '_ChatViewModel._setupPeriodicTimerIfNoInternet');
-    try {
-      return super._setupPeriodicTimerIfNoInternet();
-    } finally {
-      _$_ChatViewModelActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void goToChat(BuildContext context, String userId) {
+  void goToChat(BuildContext context) {
     final _$actionInfo = _$_ChatViewModelActionController.startAction(
         name: '_ChatViewModel.goToChat');
     try {
-      return super.goToChat(context, userId);
+      return super.goToChat(context);
     } finally {
       _$_ChatViewModelActionController.endAction(_$actionInfo);
     }
@@ -111,8 +115,9 @@ mixin _$ChatViewModel on _ChatViewModel, Store {
   @override
   String toString() {
     return '''
-isDisposed: ${isDisposed},
-isUserNotNull: ${isUserNotNull},
+isLogin: ${isLogin},
+loginPathState: ${loginPathState},
+registerPathState: ${registerPathState},
 totalUnreadCount: ${totalUnreadCount}
     ''';
   }
